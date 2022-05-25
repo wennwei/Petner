@@ -1,0 +1,11 @@
+import SwiftUI
+
+struct PreviewOfActivity: View {
+    var body: some View {
+        NavigationView {
+            Text("Preview")
+                .navigationTitle("Preview of Activity")
+            
+        }
+    }
+}
