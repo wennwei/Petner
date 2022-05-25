@@ -1,18 +1,16 @@
 import SwiftUI
 import Foundation
 
-struct MonthStruct
-{
+struct MonthStruct {
     var monthType: MonthType
     var dayInt: Int
-    func day() -> String
-    {
+    
+    func day() -> String {
         return String(dayInt)
     }
 }
 
-enum MonthType
-{
+enum MonthType {
     case Previous
     case Current
     case Next
