@@ -1,24 +1,23 @@
 import SwiftUI
 
-struct Calender: View
-{
+struct Calender: View {
+    
     @EnvironmentObject var dateHolder: DateHolder
     @State private var viewType = "Monthly"
-    let views = ["Monthly, Weekly"]
+    let views = ["Monthly", "Weekly"]
     
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: false)
-            {
-                VStack //(spacing: 1)
-        {
-            DateScrollerView()
-                .environmentObject(dateHolder)
-                .padding()
-            dayOfWeekStack
-            calendarGrid
-        }
-    }
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack {
+                    DateScrollerView()
+                        .environmentObject(dateHolder)
+                        .padding()
+                    dayOfWeekStack
+                    calendarGrid
+                }
+            
+            }
             .toolbar {
                 ToolbarItem(placement: .navigation) {
                     Button("                ") {}
@@ -30,20 +29,16 @@ struct Calender: View
                         }
                     }
                     .pickerStyle(.segmented)
-                    
-                    
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button("                ") {}
                 }
-                
             }
         }
     }
-    var dayOfWeekStack: some View
-    {
-        HStack(spacing: 1)
-        {
+
+    var dayOfWeekStack: some View {
+        HStack(spacing: 1) {
             Text("Sun").dayOfWeek()
             Text("Mon").dayOfWeek()
             Text("Tue").dayOfWeek()
@@ -52,55 +47,20 @@ struct Calender: View
             Text("Fri").dayOfWeek()
             Text("Sat").dayOfWeek()
         }
-    } 
-            /* var headertoggle: some View {
-            NavigationView {
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack {
-                        MonthView()
-                        Spacer()
-                    }
-                }
-                
-                .toolbar {
-                    ToolbarItem(placement: .navigation) {
-                        Button("                ") {}
-                    }
-                    ToolbarItem(placement: .principal) {
-                        Picker("View", selection: $viewType) {
-                            ForEach(views, id: \.self) {
-                                Text("\($0)")
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        
-                        
-                    }
-                    ToolbarItem(placement: .primaryAction) {
-                        Button("                ") {}
-                    }
-                    
-                }
-            }
-        } */
-    var calendarGrid: some View
-    {
-        VStack(spacing: 1)
-        {
+    }
+    
+    var calendarGrid: some View {
+        
+        VStack(spacing: 40) {
             let daysInMonth = CalendarHelper().daysInMonth(dateHolder.date)
             let firstDayOfMonth = CalendarHelper().firstOfMonth(dateHolder.date)
             let startingSpaces = CalendarHelper().weekDay(firstDayOfMonth)
             let prevMonth = CalendarHelper().minusMonth(dateHolder.date)
             let daysInPrevMonth = CalendarHelper().daysInMonth(prevMonth)
             
-            ForEach(0..<6)
-            {
-                row in
-                HStack(spacing: 1)
-                {
-                    ForEach(1..<8)
-                    {
-                        column in
+            ForEach(0..<6) { row in
+                HStack(spacing: 1) {
+                    ForEach(1..<8) { column in
                         let count = column + (row * 7)
                         CalendarCell(count: count, startingSpaces:startingSpaces, daysInMonth: daysInMonth, daysInPrevMonth: daysInPrevMonth)
                             .environmentObject(dateHolder)
@@ -110,10 +70,10 @@ struct Calender: View
             }
         }
         .frame(maxHeight: .infinity)
-    } 
+    }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct Calender_Previews: PreviewProvider {
     @StateObject static var dateholder = DateHolder()
     static var previews: some View {
         Calender()
@@ -122,12 +82,12 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 
-extension Text
-{
-    func dayOfWeek() -> some View
-    {
+extension Text {
+    func dayOfWeek() -> some View {
         self.frame(maxWidth: .infinity)
-            .padding(.top, 1)
+            .padding(.vertical, 10)
             .lineLimit(1)
+            .font(.title2)
+            
     }
 }
