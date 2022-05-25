@@ -1,0 +1,10 @@
+import SwiftUI
+
+struct Pet: View {
+    var body: some View {
+        NavigationView {
+            Text("Pet")
+                .navigationTitle("Pet")
+        }
+    }
+}
