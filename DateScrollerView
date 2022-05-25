@@ -1,16 +1,13 @@
 import SwiftUI
 
-struct DateScrollerView: View
-{
+struct DateScrollerView: View {
     @EnvironmentObject var dateHolder: DateHolder
     
-    var body: some View
-    {
-        HStack
-        {
+    var body: some View {
+        HStack {
             Spacer()
-            Button(action: previousMonth)
-            {
+            
+            Button(action: previousMonth) {
                 Image(systemName: "arrow.left")
                     .imageScale(.large)
                     .font(Font.title.weight(.bold))
@@ -20,23 +17,21 @@ struct DateScrollerView: View
                 .bold()
                 .animation(.none)
                 .frame(maxWidth: .infinity)
-            Button(action: nextMonth)
-            {
+            Button(action: nextMonth) {
                 Image(systemName: "arrow.right")
                     .imageScale(.large)
                     .font(Font.title.weight(.bold))
             }
+            
             Spacer()
         }
     }
     
-    func previousMonth()
-    {
+    func previousMonth() {
         dateHolder.date = CalendarHelper().minusMonth(dateHolder.date)
     }
     
-    func nextMonth()
-    {
+    func nextMonth() {
         dateHolder.date = CalendarHelper().plusMonth(dateHolder.date)
     }
 }
