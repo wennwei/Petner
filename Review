@@ -1,0 +1,10 @@
+import SwiftUI
+
+struct ReviewOfActivity: View{
+    var body: some View {
+        NavigationView {
+            Text("Review")
+                .navigationTitle("Preview of Activity")
+        }
+    }
+}
