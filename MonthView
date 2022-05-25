@@ -1,0 +1,30 @@
+import SwiftUI
+
+struct MonthView: View {
+    var currentDate: Date {
+        Date.now
+    }
+    
+    @State private var currentMonth = "January"
+    
+    var body: some View {
+        VStack(spacing: 10) {
+                Button {
+                    
+                } label: {
+                    Image(systemName: "arrow.backward.circle")
+                        .font(.title)
+                    
+                }
+                Button {
+                    
+                } label: {
+                    Image(systemName: "arrow.forward.circle")
+                        .font(.title)
+                        .padding(.trailing)
+                    
+                }
+            }
+        }
+        
+}
