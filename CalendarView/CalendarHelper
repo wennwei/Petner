@@ -1,12 +1,12 @@
-
 import Foundation
 
 class CalendarHelper {
+    
     let calendar = Calendar.current
     let dateFormatter = DateFormatter()
     
     func monthYearString(_ date: Date) -> String {
-        dateFormatter.dateFormat = "LLL yyyy"
+        dateFormatter.dateFormat = "LLLL yyyy"
         return dateFormatter.string(from: date)
     }
     
@@ -33,8 +33,40 @@ class CalendarHelper {
         return calendar.date(from: components)!
     }
     
+    // Returns the day of the week where Sunday is 0
     func weekDay(_ date: Date) -> Int {
         let components = calendar.dateComponents([.weekday], from: date)
         return components.weekday! - 1
+    }
+    
+    func monthStruct(currDate: Date, count: Int, startingSpaces: Int, daysInMonth: Int, daysInPrevMonth: Int) -> MonthStruct {
+        let start = startingSpaces == 0 ? startingSpaces + 7 : startingSpaces
+        
+        let currMonth = Calendar.current.component(.month, from: currDate)
+        let currYear = Calendar.current.component(.year, from: currDate)
+        var components = DateComponents()
+        components.month = currMonth
+        components.year = currYear
+        
+        if (count <= start) {
+            let day = daysInPrevMonth + count - start
+            components.day = day
+            var dayDetails = Calendar.current.date(from: components)!
+            dayDetails = minusMonth(dayDetails)
+            return MonthStruct(monthType: MonthType.Previous, dayInt: day, dayDetails: dayDetails)
+            
+        } else if (count - start > daysInMonth) {
+            let day = count - start - daysInMonth
+            components.day = day
+            var dayDetails = Calendar.current.date(from: components)!
+            dayDetails = plusMonth(dayDetails)
+            return MonthStruct(monthType: MonthType.Next, dayInt: day, dayDetails: dayDetails)
+        }
+        
+        let day = count - start
+        components.day = day
+        let dayDetails = Calendar.current.date(from: components)!
+        
+        return MonthStruct(monthType: MonthType.Current, dayInt: day, dayDetails: dayDetails)
     }
 }
