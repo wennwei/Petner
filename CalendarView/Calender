@@ -1,22 +1,29 @@
 import SwiftUI
 
 struct Calender: View {
-    
     @EnvironmentObject var dateHolder: DateHolder
+    
     @State private var viewType = "Monthly"
     let views = ["Monthly", "Weekly"]
     
+    @State private var todayDate = Date.now
+    
+    @State private var showDaily = false
+    @State private var daySelected = Date.now
+    
+    
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack {
-                    DateScrollerView()
-                        .environmentObject(dateHolder)
-                        .padding()
-                    dayOfWeekStack
-                    calendarGrid
-                }
-            
+            VStack {
+                DateScrollerView()
+                    .padding([.leading, .bottom, .trailing])
+                    .environmentObject(dateHolder)
+                dayOfWeekStack
+                calendarGrid
+                
+                NavigationLink("", destination: DailyView(currDay: daySelected) , isActive: $showDaily)
+                
+                Spacer()
             }
             .toolbar {
                 ToolbarItem(placement: .navigation) {
@@ -51,7 +58,7 @@ struct Calender: View {
     
     var calendarGrid: some View {
         
-        VStack(spacing: 40) {
+        VStack(spacing: 10) {
             let daysInMonth = CalendarHelper().daysInMonth(dateHolder.date)
             let firstDayOfMonth = CalendarHelper().firstOfMonth(dateHolder.date)
             let startingSpaces = CalendarHelper().weekDay(firstDayOfMonth)
@@ -62,16 +69,29 @@ struct Calender: View {
                 HStack(spacing: 1) {
                     ForEach(1..<8) { column in
                         let count = column + (row * 7)
-                        CalendarCell(count: count, startingSpaces:startingSpaces, daysInMonth: daysInMonth, daysInPrevMonth: daysInPrevMonth)
-                            .environmentObject(dateHolder)
-                        
+                        let dayCell = CalendarHelper().monthStruct(currDate: dateHolder.date, count: count, startingSpaces: startingSpaces, daysInMonth: daysInMonth, daysInPrevMonth: daysInPrevMonth)
+                        Button {
+                            let selectedDay = dayCell.dayDetails
+                            goToDaily(selectedDay: selectedDay)
+                        } label: {
+                            CalendarCell(dayCell: dayCell)
+                                .environmentObject(dateHolder)
+                        }
                     }
                 }
             }
         }
-        .frame(maxHeight: .infinity)
+        .frame(maxHeight: 400)
+    }
+    
+    // bring up dailyview on the day which is tapped on
+    func goToDaily(selectedDay: Date) {
+        daySelected = selectedDay
+        showDaily = true
     }
 }
+
+
 
 struct Calender_Previews: PreviewProvider {
     @StateObject static var dateholder = DateHolder()
