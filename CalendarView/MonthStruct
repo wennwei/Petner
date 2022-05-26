@@ -4,7 +4,7 @@ import Foundation
 struct MonthStruct {
     var monthType: MonthType
     var dayInt: Int
-    
+    var dayDetails: Date
     func day() -> String {
         return String(dayInt)
     }
