@@ -1,0 +1,96 @@
+
+import SwiftUI
+
+struct AddEvent: View {
+    @EnvironmentObject var database: DBHelper
+    @ObservedObject var myEvents: Events
+    
+    var currDay: Date
+    
+    // categories available
+    let types = ["Leisure", "Exam"]
+    
+    var day: Int {
+        let components = Calendar.current.dateComponents([.day], from: currDay)
+        return components.day ?? 0
+    }
+    var month: Int {
+        let components = Calendar.current.dateComponents([.month], from: currDay)
+        return components.month ?? 0
+    }
+    var year: Int {
+        let components = Calendar.current.dateComponents([.year], from: currDay)
+        return components.year ?? 0
+    }
+    
+    @State private var desc: String = ""
+    @State private var startTime: Int = 10
+    @State private var endTime: Int = 11
+    @State private var category: String = "Exam"
+    @State private var completed: Int = 0
+    
+    // keyboard for input event description
+    @FocusState private var descIsFocused: Bool
+    
+    @State private var start: Date = Date.now
+    
+    // for dismissing the view
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                TextField("Event description", text: $desc)
+                    .keyboardType(.default)
+                    .focused($descIsFocused)
+
+                Picker("Type", selection: $category) {
+                    ForEach(types, id: \.self) {
+                        Text($0)
+                    }
+                }
+                .pickerStyle(.segmented)
+                Picker("Start Time", selection: $startTime) {
+                    ForEach(0..<24) {
+                        Text("\($0)")
+                    }
+                }
+                // Can edit to range from start time to 23
+                Picker("End Time", selection: $endTime) {
+                    ForEach(0..<24) {
+                        Text("\($0)")
+                    }
+                }
+                
+                //if want to include min also
+                /*DatePicker("Start Time", selection: $start, displayedComponents: .hour)
+                    .labelsHidden()*/
+            }
+            .navigationTitle("New event")
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        descIsFocused = false
+                    }
+                }
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        let activity = EventStruct(day: day, month: month, year: year, desc: desc, startTime: startTime, endTime: endTime, category: category, completed: completed)
+                        
+                        database.insertEvent(day: activity.day, month: activity.month, year: activity.year, desc: activity.desc, startTime: activity.startTime, endTime: activity.endTime, category: activity.category, completed: activity.completed)
+                        CalendarHelper().getEvents(selectedDay: currDay, database: database, myEvents: myEvents)
+
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct AddEvent_Previews: PreviewProvider {
+    static var previews: some View {
+        AddEvent(myEvents: Events(), currDay: Date.now)
+    }
+}
