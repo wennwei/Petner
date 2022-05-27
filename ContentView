@@ -1,26 +1,37 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var database = DBHelper()
     var body: some View {
         TabView {
             Calender()
-                .tabItem{
-                    Label("Calendar", systemImage:"calendar")
+                .tabItem {
+                    Label("Calendar", systemImage: "calendar")
                 }
             PreviewOfActivity()
-                .tabItem{
-                    Label("Preview", systemImage:"list.dash")
+                .tabItem {
+                    Label("Preview", systemImage: "list.dash")
                 }
             ReviewOfActivity()
-                .tabItem{
+                .tabItem {
                     Label("Review", systemImage: "checklist")
                 }
             Pet()
-                .tabItem{
-                    Label("Pet", systemImage:"pawprint")
+                .tabItem {
+                    Label("Pet", systemImage: "pawprint")
                 }
         }
+        .environmentObject(database)
     }
 }
 
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        let dateHolder = DateHolder()
+        let database = DBHelper()
+        ContentView()
+            .environmentObject(dateHolder)
+            .environmentObject(database)
 
+    }
+}
