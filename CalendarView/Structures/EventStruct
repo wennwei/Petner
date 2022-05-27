@@ -1,0 +1,13 @@
+import SwiftUI
+import Foundation
+
+struct EventStruct: Hashable {
+    var day: Int
+    var month: Int
+    var year: Int
+    var desc: String
+    var startTime: Int
+    var endTime: Int
+    var category: String
+    var completed: Int
+}
