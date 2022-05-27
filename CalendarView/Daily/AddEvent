@@ -76,11 +76,8 @@ struct AddEvent: View {
                 }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        let activity = EventStruct(day: day, month: month, year: year, desc: desc, startTime: startTime, endTime: endTime, category: category, completed: completed)
-                        
-                        database.insertEvent(day: activity.day, month: activity.month, year: activity.year, desc: activity.desc, startTime: activity.startTime, endTime: activity.endTime, category: activity.category, completed: activity.completed)
+                        database.insertEvent(day: day, month: month, year: year, desc: desc, startTime: startTime, endTime: endTime, category: category, completed: completed)
                         CalendarHelper().getEvents(selectedDay: currDay, database: database, myEvents: myEvents)
-
                         dismiss()
                     }
                 }
