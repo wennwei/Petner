@@ -1,0 +1,109 @@
+
+import SwiftUI
+
+struct DailyView: View {
+    
+    @EnvironmentObject var database: DBHelper
+    var currDay: Date
+
+    // for adding events
+    @State private var showingAddEvent = false
+    @ObservedObject var myEvents: Events
+    
+    
+    var body: some View {
+        List {
+            Section(header: Text("Exam")) {
+                ForEach(myEvents.examEvents, id: \.self) { event in
+                    if checkIfSameDay(selectedDay: currDay, event: event) {
+                        VStack {
+                            HStack {
+                                Text(event.desc)
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
+                                    .padding(.bottom, 8)
+                                    .padding(.top, 5)
+                                    
+                                Spacer()
+                                Button {
+                                    
+                                } label: {
+                                    Image(systemName: "circle")
+                                }
+                            }
+                            HStack {
+                                Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                                    
+                                Spacer()
+                            }
+                        }
+                    }
+                }
+            }
+            Section(header: Text("Leisure")) {
+                ForEach(myEvents.leisureEvents, id: \.self) { event in
+                    if checkIfSameDay(selectedDay: currDay, event: event) {
+                        VStack {
+                            HStack {
+                                Text(event.desc)
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
+                                    .padding(.bottom, 8)
+                                    .padding(.top, 5)
+                                    
+                                Spacer()
+                                Button {
+                                    
+                                } label: {
+                                    Image(systemName: "circle")
+                                }
+                            }
+                            HStack {
+                                Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                                    
+                                Spacer()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle(CalendarHelper().dayMonthYearString(currDay))
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button {
+                    showingAddEvent = true
+                } label: {
+                    Image(systemName: "plus")
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+            }
+        }
+        .sheet(isPresented: $showingAddEvent) {
+            AddEvent(myEvents: myEvents, currDay: currDay)
+                .environmentObject(database)
+        }
+           
+    }
+    
+    func checkIfSameDay(selectedDay: Date, event: EventStruct) -> Bool {
+        let components = Calendar.current.dateComponents([.day, .month, .year], from: selectedDay)
+        let day = components.day ?? 0
+        let month = components.month ?? 0
+        let year = components.year ?? 0
+        if event.day == day && event.month == month && event.year == year {
+            return true
+        }
+        return false
+    }
+    
+}
+
+struct DailyView_Previews: PreviewProvider {
+    static var previews: some View {
+        let myEvents = Events()
+        let database = DBHelper()
+        DailyView(currDay: Date.now, myEvents: myEvents)
+            .environmentObject(database)
+    }
+}
