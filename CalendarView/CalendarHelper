@@ -1,3 +1,4 @@
+
 import Foundation
 
 class CalendarHelper {
@@ -7,6 +8,11 @@ class CalendarHelper {
     
     func monthYearString(_ date: Date) -> String {
         dateFormatter.dateFormat = "LLLL yyyy"
+        return dateFormatter.string(from: date)
+    }
+    
+    func dayMonthYearString(_ date: Date) -> String {
+        dateFormatter.dateFormat = "E, d MMM yy"
         return dateFormatter.string(from: date)
     }
     
@@ -69,4 +75,18 @@ class CalendarHelper {
         
         return MonthStruct(monthType: MonthType.Current, dayInt: day, dayDetails: dayDetails)
     }
+    
+    // update daily view with updated events
+    func getEvents(selectedDay: Date, database: DBHelper, myEvents: Events) {
+        let allEvents = database.query()
+        
+        for event in allEvents {
+            if event.category == "Leisure" && !myEvents.leisureEvents.contains(event) {
+                myEvents.leisureEvents.insert(event, at: 0)
+            } else if event.category == "Exam" && !myEvents.examEvents.contains(event) {
+                myEvents.examEvents.insert(event, at: 0)
+            }
+        }
+    }
+    
 }
