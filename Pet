@@ -1,10 +1,48 @@
 import SwiftUI
 
 struct Pet: View {
+    
     var body: some View {
-        NavigationView {
+        VStack(alignment: .leading) {
             Text("Pet")
-                .navigationTitle("Pet")
+                .font(.system(size:40))
+                .position(x:157, y:250)
+            
+            Text("Name")
+                .font(.system(size:30))
+                .position(x: 157, y:250)
+            
+            Button(action: {
+                print("")
+            }) {
+                Text("Shop")
+                    .frame(minWidth: 0, maxWidth: 60)
+                    .font(.system(size: 13))
+                    .foregroundColor(.orange)
+                    .padding(5)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 25)
+                            .stroke(Color.white, lineWidth: 0.5)
+                    )
+                    .position(x: 70, y: -130)
+            }
+            Button(action:{
+                print("")
+            }) {
+                Text("Wardrobe")
+                    .frame(minWidth: 0, maxWidth: 60)
+                    .font(.system(size:13))
+                    .foregroundColor(.orange)
+                    .padding(5)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 25)
+                            .stroke(Color.white, lineWidth: 0.5)
+                    )
+                    .position(x: 250, y: -315)
+            }
         }
     }
 }
+
+
+
