@@ -1,15 +1,25 @@
+
 import SwiftUI
+
+class Events: ObservableObject {
+    @Published var leisureEvents = [EventStruct]()
+    @Published var examEvents = [EventStruct]()
+    
+}
 
 struct Calender: View {
     @EnvironmentObject var dateHolder: DateHolder
+    @EnvironmentObject var database: DBHelper
+    @StateObject var myEvents = Events() // creating an instance of Events class to store array of different category of events
     
     @State private var viewType = "Monthly"
     let views = ["Monthly", "Weekly"]
     
-    @State private var todayDate = Date.now
     
+    // for bringing in DailyView
     @State private var showDaily = false
     @State private var daySelected = Date.now
+    
     
     
     var body: some View {
@@ -21,7 +31,7 @@ struct Calender: View {
                 dayOfWeekStack
                 calendarGrid
                 
-                NavigationLink("", destination: DailyView(currDay: daySelected) , isActive: $showDaily)
+                NavigationLink("", destination: DailyView(currDay: daySelected, myEvents: myEvents).environmentObject(database) , isActive: $showDaily)
                 
                 Spacer()
             }
@@ -72,7 +82,9 @@ struct Calender: View {
                         let dayCell = CalendarHelper().monthStruct(currDate: dateHolder.date, count: count, startingSpaces: startingSpaces, daysInMonth: daysInMonth, daysInPrevMonth: daysInPrevMonth)
                         Button {
                             let selectedDay = dayCell.dayDetails
+                            CalendarHelper().getEvents(selectedDay: selectedDay, database: database, myEvents: myEvents)
                             goToDaily(selectedDay: selectedDay)
+                            
                         } label: {
                             CalendarCell(dayCell: dayCell)
                                 .environmentObject(dateHolder)
@@ -96,8 +108,11 @@ struct Calender: View {
 struct Calender_Previews: PreviewProvider {
     @StateObject static var dateholder = DateHolder()
     static var previews: some View {
+        let database = DBHelper()
         Calender()
             .environmentObject(dateholder)
+            .environmentObject(database)
+
     }
 }
 
