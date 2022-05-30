@@ -1,10 +1,31 @@
 import SwiftUI
 
-struct ReviewOfActivity: View{
+struct Review: View {
     var body: some View {
         NavigationView {
-            Text("Review")
-                .navigationTitle("Preview of Activity")
+            List {
+                Section {
+                    Text("Event 1")
+                    
+                } header: {
+                    Text("Previous Week")
+                }
+                Section {
+                    Text("Event 2")
+                    
+                } header: {
+                    Text("Current Week")
+                }
+            }
+            .listStyle(.sidebar)
+            
+            .navigationTitle("Review")
         }
+    }
+}
+
+struct Review_Previews: PreviewProvider {
+    static var previews: some View {
+        Review()
     }
 }
