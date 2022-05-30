@@ -1,11 +1,21 @@
 import SwiftUI
 
-struct PreviewOfActivity: View {
+struct Preview: View {
     var body: some View {
         NavigationView {
-            Text("Preview")
-                .navigationTitle("Preview of Activity")
-            
+            List {
+                Text("Event 1")
+                Text("Event 2")
+
+                
+            }
+            .navigationTitle("Preview")
         }
+    }
+}
+
+struct Preview_Previews: PreviewProvider {
+    static var previews: some View {
+        Preview()
     }
 }
