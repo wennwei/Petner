@@ -25,6 +25,7 @@ class DBHelper: ObservableObject {
     
     func createTable()  {
         let createTableString = "CREATE TABLE IF NOT EXISTS events(day INTEGER, month INTEGER, year INTEGER, desc TEXT, startTime INTEGER, endTime INTEGER, category TEXT, completed INTEGER);"
+        //let createTableString = "CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT, day INTEGER, month INTEGER, year INTEGER, desc TEXT, startTime INTEGER, endTime INTEGER, category TEXT, completed INTEGER);"
         
         var statement : OpaquePointer? = nil
         
@@ -42,11 +43,10 @@ class DBHelper: ObservableObject {
     
     func insertEvent(day: Int, month: Int, year: Int, desc: String, startTime: Int, endTime: Int, category: String, completed: Int) {
         let insertStatementString = "INSERT INTO events (day, month, year, desc, startTime, endTime, category, completed) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-        
-        
         var insertStatement: OpaquePointer? = nil
 
         if sqlite3_prepare_v2(db, insertStatementString, -1, &insertStatement, nil) == SQLITE_OK {
+            //sqlite3_bind_int(insertStatement, 1, SQLITE_NULL)
         
             sqlite3_bind_int(insertStatement, 1, Int32(day))
             sqlite3_bind_int(insertStatement, 2, Int32(month))
@@ -72,10 +72,10 @@ class DBHelper: ObservableObject {
         var events = [EventStruct]()
         let queryStatementString = "SELECT day, month, year, desc, startTime, endTime, category, completed FROM events;"
         var queryStatement: OpaquePointer?
-        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) ==
-          SQLITE_OK {
+        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
         
             while (sqlite3_step(queryStatement) == SQLITE_ROW) {
+                print("once")
                 var tempEvent = EventStruct(day: 1, month: 1, year: 2022, desc: "", startTime: 1, endTime: 2, category: "Leisure", completed: 0)
                 tempEvent.day = Int(sqlite3_column_int(queryStatement, 0))
                 tempEvent.month = Int(sqlite3_column_int(queryStatement, 1))
@@ -107,5 +107,35 @@ class DBHelper: ObservableObject {
         }
         sqlite3_finalize(queryStatement)
         return events
+    }
+    
+    func delete(desc: String, day: Int) {
+        let deleteStatementString = "DELETE FROM events WHERE desc LIKE '\(desc)' AND day = \(day);"
+        var deleteStatement: OpaquePointer?
+        if sqlite3_prepare_v2(db, deleteStatementString, -1, &deleteStatement, nil) == SQLITE_OK {
+            if sqlite3_step(deleteStatement) == SQLITE_DONE {
+              print("\nSuccessfully deleted row.")
+            } else {
+              print("\nCould not delete row.")
+            }
+        } else {
+            print("\nDELETE statement could not be prepared")
+        }
+        sqlite3_finalize(deleteStatement)
+    }
+    
+    func update(oldEvent: EventStruct, event: EventStruct) {
+        let updateStatementString = "UPDATE events SET day = \(event.day), month = \(event.month), year = \(event.year), desc = '\(event.desc)', startTime = \(event.startTime), endTime = \(event.endTime), category = '\(event.category)' WHERE desc = '\(oldEvent.desc)' AND day = \(oldEvent.day);"
+        var updateStatement: OpaquePointer?
+        if sqlite3_prepare_v2(db, updateStatementString, -1, &updateStatement, nil) == SQLITE_OK {
+            if sqlite3_step(updateStatement) == SQLITE_DONE {
+                print("\nSuccessfully updated row.")
+            } else {
+                print("\nCould not update row.")
+            }
+        } else {
+            print("\nUPDATE statement is not prepared")
+        }
+        sqlite3_finalize(updateStatement)
     }
 }
