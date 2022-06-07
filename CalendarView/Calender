@@ -82,7 +82,7 @@ struct Calender: View {
                         let dayCell = CalendarHelper().monthStruct(currDate: dateHolder.date, count: count, startingSpaces: startingSpaces, daysInMonth: daysInMonth, daysInPrevMonth: daysInPrevMonth)
                         Button {
                             let selectedDay = dayCell.dayDetails
-                            CalendarHelper().getEvents(selectedDay: selectedDay, database: database, myEvents: myEvents)
+                            CalendarHelper().getEvents(database: database, myEvents: myEvents)
                             goToDaily(selectedDay: selectedDay)
                             
                         } label: {
@@ -102,7 +102,6 @@ struct Calender: View {
         showDaily = true
     }
 }
-
 
 
 struct Calender_Previews: PreviewProvider {
