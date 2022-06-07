@@ -1,0 +1,116 @@
+import SwiftUI
+
+struct EditEvent: View {
+    @EnvironmentObject var database: DBHelper
+    @ObservedObject var myEvents: Events
+    
+    // categories available
+    let types = ["Leisure", "Exam"]
+
+    @Binding var day: Int
+    @Binding var month: Int
+    @Binding var year: Int
+    @Binding var desc: String
+    @Binding var startTime: Int
+    @Binding var endTime: Int
+    @Binding var category: String
+    @Binding var completed: Int
+    @Binding var oldEvent: EventStruct
+    
+    // keyboard for input event description
+    @FocusState private var descIsFocused: Bool
+    
+    // for dismissing the view
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        let newEvent = EventStruct(day: day, month: month, year: year, desc: desc, startTime: startTime, endTime: endTime, category: category, completed: completed)
+
+        NavigationView {
+            Form {
+                TextField("Event description", text: $desc)
+                    .keyboardType(.default)
+                    .focused($descIsFocused)
+
+                Picker("Type", selection: $category) {
+                    ForEach(types, id: \.self) {
+                        Text($0)
+                    }
+                }
+                .pickerStyle(.segmented)
+                Picker("Start Time", selection: $startTime) {
+                    ForEach(0..<24) {
+                        Text("\($0)")
+                    }
+                }
+                // Can edit to range from start time to 23
+                Picker("End Time", selection: $endTime) {
+                    ForEach(0..<24) {
+                        Text("\($0)")
+                    }
+                }
+                
+                Section {
+                    HStack {
+                        Spacer()
+                        
+                        Button("Delete Event") {
+                            if newEvent.category == "Exam" {
+                                if let idx = myEvents.examEvents.firstIndex(of: oldEvent) {
+                                    myEvents.examEvents.remove(at: idx)
+                                }
+                            } else if newEvent.category == "Leisure" {
+                                if let idx = myEvents.leisureEvents.firstIndex(of: oldEvent) {
+                                    myEvents.leisureEvents.remove(at: idx)
+                                }
+                            }
+                            database.delete(desc: desc, day: day)
+                            CalendarHelper().getEvents(database: database, myEvents: myEvents)
+                            dismiss()
+                        }
+                        .foregroundColor(.red)
+                        
+                        Spacer()
+                    }
+                }
+                //if want to include min also
+                /*DatePicker("Start Time", selection: $start, displayedComponents: .hour)
+                    .labelsHidden()*/
+            }
+            .navigationTitle("Edit event")
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        descIsFocused = false
+                    }
+                }
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        updateEvent(oldEvent: oldEvent, newEvent: newEvent)
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+    
+    func deleteEvent(event: EventStruct) {
+        if event.category == "Exam" {
+            if let idx = myEvents.examEvents.firstIndex(of: event) {
+                myEvents.examEvents.remove(at: idx)
+            }
+        } else if event.category == "Leisure" {
+            if let idx = myEvents.leisureEvents.firstIndex(of: event) {
+                myEvents.leisureEvents.remove(at: idx)
+            }
+        }
+    }
+    
+    func updateEvent(oldEvent: EventStruct, newEvent: EventStruct) {
+        database.update(oldEvent: oldEvent, event: newEvent)
+        deleteEvent(event: oldEvent)
+        CalendarHelper().getEvents(database: database, myEvents: myEvents)
+    }
+    
+}
