@@ -22,6 +22,7 @@ struct DailyView: View {
     @State private var currEvent = EventStruct(day: 0, month: 0, year: 0, desc: "", startTime: 0, endTime: 0, category: "", completed: 0)
     
     @State private var eventArray = [EventStruct]()
+    @State var checked = false
     
     var body: some View {
         List {
@@ -61,6 +62,7 @@ struct DailyView: View {
                 } label: {
                     VStack {
                         HStack {
+                            Toggle(isOn: $checked) {
                             Text(event.desc)
                                 .font(.title3)
                                 .fontWeight(.semibold)
@@ -68,12 +70,9 @@ struct DailyView: View {
                                 .padding(.top, 5)
                                 
                             Spacer()
-                            Button {
-                                
-                            } label: {
-                                Image(systemName: "circle")
-                            }
-                            .foregroundColor(.orange)
+                            
+                            }.toggleStyle(CheckboxStyle())
+                            
                         }
                         HStack {
                             Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
@@ -94,6 +93,7 @@ struct DailyView: View {
                 } label: {
                     VStack {
                         HStack {
+                            Toggle(isOn: $checked) {
                             Text(event.desc)
                                 .font(.title3)
                                 .fontWeight(.semibold)
@@ -101,12 +101,7 @@ struct DailyView: View {
                                 .padding(.top, 5)
                                 
                             Spacer()
-                            Button {
-                                
-                            } label: {
-                                Image(systemName: "circle")
-                            }
-                            .foregroundColor(.orange)
+                            }.toggleStyle(CheckboxStyle())
                         }
                         HStack {
                             Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
