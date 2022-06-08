@@ -22,7 +22,6 @@ struct DailyView: View {
     @State private var currEvent = EventStruct(day: 0, month: 0, year: 0, desc: "", startTime: 0, endTime: 0, category: "", completed: 0)
     
     @State private var eventArray = [EventStruct]()
-    @State var checked = false
     
     var body: some View {
         List {
@@ -62,7 +61,6 @@ struct DailyView: View {
                 } label: {
                     VStack {
                         HStack {
-                            Toggle(isOn: $checked) {
                             Text(event.desc)
                                 .font(.title3)
                                 .fontWeight(.semibold)
@@ -71,8 +69,13 @@ struct DailyView: View {
                                 
                             Spacer()
                             
-                            }.toggleStyle(CheckboxStyle())
-                            
+                            Button {
+                                toggleButton(oldEvent: event)
+                            } label: {
+                                Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
+                            }
+                            .font(.title2)
+                            .foregroundColor(.purple)
                         }
                         HStack {
                             Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
@@ -93,7 +96,6 @@ struct DailyView: View {
                 } label: {
                     VStack {
                         HStack {
-                            Toggle(isOn: $checked) {
                             Text(event.desc)
                                 .font(.title3)
                                 .fontWeight(.semibold)
@@ -101,7 +103,14 @@ struct DailyView: View {
                                 .padding(.top, 5)
                                 
                             Spacer()
-                            }.toggleStyle(CheckboxStyle())
+                            
+                            Button {
+                                toggleButton(oldEvent: event)
+                            } label: {
+                                Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
+                            }
+                            .font(.title2)
+                            .foregroundColor(.orange)
                         }
                         HStack {
                             Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
@@ -138,14 +147,24 @@ struct DailyView: View {
         showingEditEvent = true
     }
     
-}
-
-struct DailyView_Previews: PreviewProvider {
-    static var previews: some View {
-        let myEvents = Events()
-        let database = DBHelper()
-       
-        DailyView(currDay: Date.now, myEvents: myEvents)
-            .environmentObject(database)
+    func toggleButton(oldEvent: EventStruct) {
+        var completedEvent = oldEvent
+        if completedEvent.completed == 1 {
+            completedEvent.completed = 0
+        } else {
+            completedEvent.completed = 1
+        }
+        
+        if oldEvent.category == "Exam" {
+            if let idx = myEvents.examEvents.firstIndex(of: oldEvent) {
+                myEvents.examEvents[idx] = completedEvent
+            }
+        } else if oldEvent.category == "Leisure" {
+            if let idx = myEvents.leisureEvents.firstIndex(of: oldEvent) {
+                myEvents.leisureEvents[idx] = completedEvent
+            }
+        }
+        database.update(oldEvent: oldEvent, event: completedEvent)
     }
+    
 }
