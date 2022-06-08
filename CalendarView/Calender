@@ -1,4 +1,3 @@
-
 import SwiftUI
 
 class Events: ObservableObject {
@@ -83,6 +82,7 @@ struct Calender: View {
                         Button {
                             let selectedDay = dayCell.dayDetails
                             CalendarHelper().getEvents(database: database, myEvents: myEvents)
+                            sortCompleted(myEvent: myEvents)
                             goToDaily(selectedDay: selectedDay)
                             
                         } label: {
@@ -98,8 +98,18 @@ struct Calender: View {
     
     // bring up dailyview on the day which is tapped on
     func goToDaily(selectedDay: Date) {
+        
         daySelected = selectedDay
         showDaily = true
+    }
+    
+    func sortCompleted(myEvent: Events) {
+        myEvent.examEvents.sort {
+            $0.completed < $1.completed
+        }
+        myEvent.leisureEvents.sort {
+            $0.completed < $1.completed
+        }
     }
 }
 
