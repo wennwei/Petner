@@ -88,4 +88,16 @@ class CalendarHelper {
         }
     }
     
+    //delete event from array
+    func deleteEvent(event: EventStruct, myEvents: Events) {
+        if event.category == "Exam" {
+            if let idx = myEvents.examEvents.firstIndex(of: event) {
+                myEvents.examEvents.remove(at: idx)
+            }
+        } else if event.category == "Leisure" {
+            if let idx = myEvents.leisureEvents.firstIndex(of: event) {
+                myEvents.leisureEvents.remove(at: idx)
+            }
+        }
+    }
 }
