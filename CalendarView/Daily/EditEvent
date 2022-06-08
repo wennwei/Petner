@@ -87,30 +87,13 @@ struct EditEvent: View {
                 }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        updateEvent(oldEvent: oldEvent, newEvent: newEvent)
+                        database.update(oldEvent: oldEvent, event: newEvent)
+                        CalendarHelper().deleteEvent(event: oldEvent, myEvents: myEvents)
+                        CalendarHelper().getEvents(database: database, myEvents: myEvents)
                         dismiss()
                     }
                 }
             }
         }
     }
-    
-    func deleteEvent(event: EventStruct) {
-        if event.category == "Exam" {
-            if let idx = myEvents.examEvents.firstIndex(of: event) {
-                myEvents.examEvents.remove(at: idx)
-            }
-        } else if event.category == "Leisure" {
-            if let idx = myEvents.leisureEvents.firstIndex(of: event) {
-                myEvents.leisureEvents.remove(at: idx)
-            }
-        }
-    }
-    
-    func updateEvent(oldEvent: EventStruct, newEvent: EventStruct) {
-        database.update(oldEvent: oldEvent, event: newEvent)
-        deleteEvent(event: oldEvent)
-        CalendarHelper().getEvents(database: database, myEvents: myEvents)
-    }
-    
 }
