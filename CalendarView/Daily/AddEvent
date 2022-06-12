@@ -7,7 +7,7 @@ struct AddEvent: View {
     var currDay: Date
     
     // categories available
-    let types = ["Leisure", "Exam"]
+    let types = ["Leisure", "Exam", "Class", "Assignment", "Revision]
     
     var day: Int {
         let components = Calendar.current.dateComponents([.day], from: currDay)
@@ -25,7 +25,7 @@ struct AddEvent: View {
     @State private var desc: String = ""
     @State private var startTime: Int = 10
     @State private var endTime: Int = 11
-    @State private var category: String = "Exam"
+    @State private var category: String = "Leisure"
     @State private var completed: Int = 0
     
     // keyboard for input event description
