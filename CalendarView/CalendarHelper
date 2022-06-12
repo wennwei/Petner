@@ -84,6 +84,12 @@ class CalendarHelper {
                 myEvents.leisureEvents.insert(event, at: 0)
             } else if event.category == "Exam" && !myEvents.examEvents.contains(event) {
                 myEvents.examEvents.insert(event, at: 0)
+            } else if event.category == "Class" && !myEvents.classEvents.contains(event) {
+                myEvents.classEvents.insert(event, at: 0)
+            } else if event.category == "Revision" && !myEvents.revisionEvents.contains(event) {
+                myEvents.revisionEvents.insert(event, at: 0)
+            } else if event.category == "Assignment" && !myEvents.assignmentEvents.contains(event) {
+                myEvents.assignmentEvents.insert(event, at: 0)
             }
         }
     }
@@ -97,6 +103,18 @@ class CalendarHelper {
         } else if event.category == "Leisure" {
             if let idx = myEvents.leisureEvents.firstIndex(of: event) {
                 myEvents.leisureEvents.remove(at: idx)
+            }
+        } else if event.category == "Class" {
+            if let idx = myEvents.classEvents.firstIndex(of: event) {
+                myEvents.classEvents.remove(at: idx)
+            }
+        } else if event.category == "Assignment" {
+            if let idx = myEvents.assignmentEvents.firstIndex(of: event) {
+                myEvents.assignmentEvents.remove(at: idx)
+            }
+        } else if event.category == "Revision" {
+            if let idx = myEvents.revisionEvents.firstIndex(of: event) {
+                myEvents.revisionEvents.remove(at: idx)
             }
         }
     }
