@@ -3,7 +3,9 @@ import SwiftUI
 class Events: ObservableObject {
     @Published var leisureEvents = [EventStruct]()
     @Published var examEvents = [EventStruct]()
-    
+    @Published var classEvents = [EventStruct]()
+    @Published var assignmentEvents = [EventStruct]()
+    @Published var revisionEvents = [EventStruct]()
 }
 
 struct Calender: View {
@@ -52,7 +54,7 @@ struct Calender: View {
             }
         }
     }
-
+    
     var dayOfWeekStack: some View {
         HStack(spacing: 1) {
             Text("Sun").dayOfWeek()
@@ -110,6 +112,15 @@ struct Calender: View {
         myEvent.leisureEvents.sort {
             $0.completed < $1.completed
         }
+        myEvent.classEvents.sort {
+            $0.completed < $1.completed
+        }
+        myEvent.assignmentEvents.sort {
+            $0.completed < $1.completed
+        }
+        myEvent.revisionEvents.sort {
+            $0.completed < $1.completed
+        }
     }
 }
 
@@ -121,7 +132,7 @@ struct Calender_Previews: PreviewProvider {
         Calender()
             .environmentObject(dateholder)
             .environmentObject(database)
-
+        
     }
 }
 
@@ -132,6 +143,6 @@ extension Text {
             .padding(.vertical, 10)
             .lineLimit(1)
             .font(.title2)
-            
+        
     }
 }
