@@ -4,7 +4,7 @@ struct DailyView: View {
     
     @EnvironmentObject var database: DBHelper
     var currDay: Date
-
+    
     
     @ObservedObject var myEvents: Events
     @State private var showingEditEvent = false // for editting/deleting events
@@ -30,6 +30,15 @@ struct DailyView: View {
             }
             Section(header: Text("Leisure")) {
                 leisureRow
+            }
+            Section(header: Text("Class")) {
+                classRow
+            }
+            Section(header: Text("Assignment")) {
+                assignmentRow
+            }
+            Section(header: Text("Revision")) {
+                revisionRow
             }
         }
         .navigationTitle(CalendarHelper().dayMonthYearString(currDay))
@@ -66,7 +75,7 @@ struct DailyView: View {
                                 .fontWeight(.semibold)
                                 .padding(.bottom, 8)
                                 .padding(.top, 5)
-                                
+                            
                             Spacer()
                             
                             Button {
@@ -75,7 +84,7 @@ struct DailyView: View {
                                 Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
                             }
                             .font(.title2)
-                            .foregroundColor(.purple)
+                            .foregroundColor(.green)
                         }
                         HStack {
                             Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
@@ -101,7 +110,7 @@ struct DailyView: View {
                                 .fontWeight(.semibold)
                                 .padding(.bottom, 8)
                                 .padding(.top, 5)
-                                
+                            
                             Spacer()
                             
                             Button {
@@ -110,7 +119,112 @@ struct DailyView: View {
                                 Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
                             }
                             .font(.title2)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.green)
+                        }
+                        HStack {
+                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Spacer()
+                        }
+                    }
+                }
+                .foregroundColor(.primary)
+            }
+        }
+    }
+    
+    var classRow: some View {
+        ForEach(myEvents.classEvents, id: \.self) { event in
+            if checkIfSameDay(selectedDay: currDay, event: event) {
+                Button {
+                    goToEdit(event: event)
+                } label: {
+                    VStack {
+                        HStack {
+                            Text(event.desc)
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .padding(.bottom, 8)
+                                .padding(.top, 5)
+                            
+                            Spacer()
+                            
+                            Button {
+                                toggleButton(oldEvent: event)
+                            } label: {
+                                Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
+                            }
+                            .font(.title2)
+                            .foregroundColor(.green)
+                        }
+                        HStack {
+                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Spacer()
+                        }
+                    }
+                }
+                .foregroundColor(.primary)
+            }
+        }
+    }
+    
+    var assignmentRow: some View {
+        ForEach(myEvents.assignmentEvents, id: \.self) { event in
+            if checkIfSameDay(selectedDay: currDay, event: event) {
+                Button {
+                    goToEdit(event: event)
+                } label: {
+                    VStack {
+                        HStack {
+                            Text(event.desc)
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .padding(.bottom, 8)
+                                .padding(.top, 5)
+                            
+                            Spacer()
+                            
+                            Button {
+                                toggleButton(oldEvent: event)
+                            } label: {
+                                Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
+                            }
+                            .font(.title2)
+                            .foregroundColor(.green)
+                        }
+                        HStack {
+                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Spacer()
+                        }
+                    }
+                }
+                .foregroundColor(.primary)
+            }
+        }
+    }
+    
+    var revisionRow: some View {
+        ForEach(myEvents.revisionEvents, id: \.self) { event in
+            if checkIfSameDay(selectedDay: currDay, event: event) {
+                Button {
+                    goToEdit(event: event)
+                } label: {
+                    VStack {
+                        HStack {
+                            Text(event.desc)
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .padding(.bottom, 8)
+                                .padding(.top, 5)
+                            
+                            Spacer()
+                            
+                            Button {
+                                toggleButton(oldEvent: event)
+                            } label: {
+                                Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
+                            }
+                            .font(.title2)
+                            .foregroundColor(.green)
                         }
                         HStack {
                             Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
@@ -162,6 +276,18 @@ struct DailyView: View {
         } else if oldEvent.category == "Leisure" {
             if let idx = myEvents.leisureEvents.firstIndex(of: oldEvent) {
                 myEvents.leisureEvents[idx] = completedEvent
+            }
+        } else if oldEvent.category == "Class" {
+            if let idx = myEvents.classEvents.firstIndex(of: oldEvent) {
+                myEvents.classEvents[idx] = completedEvent
+            }
+        } else if oldEvent.category == "Assignment" {
+            if let idx = myEvents.assignmentEvents.firstIndex(of: oldEvent) {
+                myEvents.assignmentEvents[idx] = completedEvent
+            }
+        } else if oldEvent.category == "Revision" {
+            if let idx = myEvents.revisionEvents.firstIndex(of: oldEvent) {
+                myEvents.revisionEvents[idx] = completedEvent
             }
         }
         database.update(oldEvent: oldEvent, event: completedEvent)
