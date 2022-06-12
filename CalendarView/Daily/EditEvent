@@ -5,8 +5,8 @@ struct EditEvent: View {
     @ObservedObject var myEvents: Events
     
     // categories available
-    let types = ["Leisure", "Exam"]
-
+    let types = ["Leisure", "Exam", "Class", "Assignment", "Revision"]
+    
     @Binding var day: Int
     @Binding var month: Int
     @Binding var year: Int
@@ -25,13 +25,13 @@ struct EditEvent: View {
     
     var body: some View {
         let newEvent = EventStruct(day: day, month: month, year: year, desc: desc, startTime: startTime, endTime: endTime, category: category, completed: completed)
-
+        
         NavigationView {
             Form {
                 TextField("Event description", text: $desc)
                     .keyboardType(.default)
                     .focused($descIsFocused)
-
+                
                 Picker("Type", selection: $category) {
                     ForEach(types, id: \.self) {
                         Text($0)
@@ -63,6 +63,18 @@ struct EditEvent: View {
                                 if let idx = myEvents.leisureEvents.firstIndex(of: oldEvent) {
                                     myEvents.leisureEvents.remove(at: idx)
                                 }
+                            } else if newEvent.category == "Class" {
+                                if let idx = myEvents.classEvents.firstIndex(of: oldEvent) {
+                                    myEvents.classEvents.remove(at: idx)
+                                }
+                            } else if newEvent.category == "Assignment" {
+                                if let idx = myEvents.assignmentEvents.firstIndex(of: oldEvent) {
+                                    myEvents.assignmentEvents.remove(at: idx)
+                                }
+                            } else if newEvent.category == "Revision" {
+                                if let idx = myEvents.revisionEvents.firstIndex(of: oldEvent) {
+                                    myEvents.revisionEvents.remove(at: idx)
+                                } 
                             }
                             database.delete(desc: desc, day: day)
                             CalendarHelper().getEvents(database: database, myEvents: myEvents)
@@ -75,7 +87,7 @@ struct EditEvent: View {
                 }
                 //if want to include min also
                 /*DatePicker("Start Time", selection: $start, displayedComponents: .hour)
-                    .labelsHidden()*/
+                 .labelsHidden()*/
             }
             .navigationTitle("Edit event")
             .toolbar {
