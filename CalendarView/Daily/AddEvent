@@ -7,7 +7,7 @@ struct AddEvent: View {
     var currDay: Date
     
     // categories available
-    let types = ["Leisure", "Exam", "Class", "Assignment", "Revision]
+    let types = ["Leisure", "Exam", "Class", "Assignment", "Revision"]
     
     var day: Int {
         let components = Calendar.current.dateComponents([.day], from: currDay)
