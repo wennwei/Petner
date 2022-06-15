@@ -1,22 +1,47 @@
+
 import SwiftUI
 import Foundation
 
-struct Home: View {
+struct WeeklyView: View {
     @StateObject var taskModel : TaskViewModel = TaskViewModel()
     @Namespace var animation
+    
+    
+    //picker for choosing monthly/weekly view
+    let views = ["Monthly", "Weekly"]
+    @Binding var viewType: String
+
+    @State private var selectedDay = Date.now
+    @ObservedObject var myEvents: Events
+    @EnvironmentObject var database: DBHelper
+    
+    @State private var showingEditEvent = false // for editting/deleting events
+    @State private var showingAddEvent = false  // for adding events
+    
+    @State private var day: Int = 0
+    @State private var month: Int = 0
+    @State private var year: Int = 0
+    @State private var desc: String = ""
+    @State private var startTime: Int = 0
+    @State private var endTime: Int = 0
+    @State private var category: String = ""
+    @State private var completed: Int = 0
+    @State private var currEvent = EventStruct(day: 0, month: 0, year: 0, desc: "", startTime: 0, endTime: 0, category: "", completed: 0)
+    
     var body: some View {
-        
-        ScrollView(.vertical, showsIndicators: false) {
-            
-            LazyVStack(spacing:15, pinnedViews: [.sectionHeaders]) {
-                
+        NavigationView {
+            VStack(spacing: 15) {
                 Section {
-                    
-                    ScrollView(.horizontal,showsIndicators: false) {
-                        HStack(spacing:10){
-                            
-                            ForEach(taskModel.currentWeek, id:\.self) {day in
-                                
+                    HStack(spacing:10) {
+                        
+                        ForEach(taskModel.currentWeek, id:\.self) { day in
+                            Button {
+                                taskModel.currentDay = day
+                                selectedDay = day
+                                for dog in myEvents.leisureEvents {
+                                    print(dog)
+                                }
+                            } label: {
                                 VStack(spacing:10) {
                                     
                                     Text(taskModel.extractDate(date: day, format: "dd"))
@@ -27,19 +52,21 @@ struct Home: View {
                                         .font(.system(size:14))
                                     
                                     Circle()
-                                        .fill(.white)
+                                        .fill(.red)
                                         .frame(width:8, height:8)
                                         .opacity(taskModel.isToday(date: day) ? 1 :0)
                                     
                                 }
-                                .foregroundStyle(taskModel.isToday(date: day) ? .white : .black)
-                                .foregroundColor(taskModel.isToday(date: day) ? .white : .black)
+                                .foregroundStyle(taskModel.isToday(date: day) ? .red : .primary)
+                                .foregroundColor(taskModel.isToday(date: day) ? .red : .primary)
                                 .frame(width:45, height: 90)
                                 .background()
                                 .contentShape(Capsule())
                                 .onTapGesture{
                                     withAnimation{
                                         taskModel.currentDay = day
+                                        selectedDay = day
+
                                     }
                                     /*ZStack{
                                      if taskModel.isToday(date: day){
@@ -50,49 +77,294 @@ struct Home: View {
                                 }
                             }
                         }
-                        .padding(.horizontal)
                     }
-                    
-                    TasksView()
-                    
+                    .padding(.horizontal)
+                    TasksView
+                
                 } header: {
                     HeaderView()
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    Button("                ") {}
+                }
+                ToolbarItem(placement: .principal) {
+                    Picker("View", selection: $viewType) {
+                        ForEach(views, id: \.self) {
+                            Text("\($0)")
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("                ") {}
+                }
+            }
         }
     }
     
-    func TasksView() -> some View{
-        
-        LazyVStack(spacing:18) {
-            
-            if let tasks = taskModel.filteredTasks{
-                
-                if tasks.isEmpty{
-                    Text("no tasks found!")
-                        .font(.system(size:16))
-                        .fontWeight(.light)
-                        .offset(y:100)
-                }
-                else {
-                    ForEach(tasks){task in
-                        TaskCardView(task: task)
+    var examRow: some View {
+        ForEach(myEvents.examEvents, id: \.self) { event in
+            if checkIfSameDay(selectedDay: selectedDay, event: event) {
+                Button {
+                    goToEdit(event: event)
+                } label: {
+                    VStack {
+                        HStack {
+                            Text(event.desc)
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .padding(.bottom, 8)
+                                .padding(.top, 5)
+                            
+                            Spacer()
+                            
+                            Button {
+                                toggleButton(oldEvent: event)
+                            } label: {
+                                Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
+                            }
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                        }
+                        HStack {
+                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Spacer()
+                        }
                     }
                 }
+                .foregroundColor(.primary)
             }
-            else{
-                ProgressView()
-                    .offset(y:100)
-            }
-        }
-        .onChange(of: taskModel.currentDay) { newValue in
-            taskModel.filterTodayTasks()
         }
     }
     
-    func TaskCardView(task:Task)-> some View {
-        HStack{
-            Text(task.taskTitle)
+    var leisureRow: some View {
+        ForEach(myEvents.leisureEvents, id: \.self) { event in
+            if checkIfSameDay(selectedDay: selectedDay, event: event) {
+                Button {
+                    goToEdit(event: event)
+                } label: {
+                    VStack {
+                        HStack {
+                            Text(event.desc)
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .padding(.bottom, 8)
+                                .padding(.top, 5)
+                            
+                            Spacer()
+                            
+                            Button {
+                                toggleButton(oldEvent: event)
+                            } label: {
+                                Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
+                            }
+                            .font(.title2)
+                            .foregroundColor(.green)
+                        }
+                        HStack {
+                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Spacer()
+                        }
+                    }
+                }
+                .foregroundColor(.primary)
+            }
+        }
+    }
+    
+    var classRow: some View {
+        ForEach(myEvents.classEvents, id: \.self) { event in
+            if checkIfSameDay(selectedDay: selectedDay, event: event) {
+                Button {
+                    goToEdit(event: event)
+                } label: {
+                    VStack {
+                        HStack {
+                            Text(event.desc)
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .padding(.bottom, 8)
+                                .padding(.top, 5)
+                            
+                            Spacer()
+                            
+                            Button {
+                                toggleButton(oldEvent: event)
+                            } label: {
+                                Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
+                            }
+                            .font(.title2)
+                            .foregroundColor(.orange)
+                        }
+                        HStack {
+                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Spacer()
+                        }
+                    }
+                }
+                .foregroundColor(.primary)
+            }
+        }
+    }
+    
+    var assignmentRow: some View {
+        ForEach(myEvents.assignmentEvents, id: \.self) { event in
+            if checkIfSameDay(selectedDay: selectedDay, event: event) {
+                Button {
+                    goToEdit(event: event)
+                } label: {
+                    VStack {
+                        HStack {
+                            Text(event.desc)
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .padding(.bottom, 8)
+                                .padding(.top, 5)
+                            
+                            Spacer()
+                            
+                            Button {
+                                toggleButton(oldEvent: event)
+                            } label: {
+                                Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
+                            }
+                            .font(.title2)
+                            .foregroundColor(.purple)
+                        }
+                        HStack {
+                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Spacer()
+                        }
+                    }
+                }
+                .foregroundColor(.primary)
+            }
+        }
+    }
+    
+    var revisionRow: some View {
+        ForEach(myEvents.revisionEvents, id: \.self) { event in
+            if checkIfSameDay(selectedDay: selectedDay, event: event) {
+                Button {
+                    goToEdit(event: event)
+                } label: {
+                    VStack {
+                        HStack {
+                            Text(event.desc)
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .padding(.bottom, 8)
+                                .padding(.top, 5)
+                            
+                            Spacer()
+                            
+                            Button {
+                                toggleButton(oldEvent: event)
+                            } label: {
+                                Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
+                            }
+                            .font(.title2)
+                            .foregroundColor(.yellow)
+                        }
+                        HStack {
+                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Spacer()
+                        }
+                    }
+                }
+                .foregroundColor(.primary)
+            }
+        }
+    }
+    
+    func checkIfSameDay(selectedDay: Date, event: EventStruct) -> Bool {
+        let components = Calendar.current.dateComponents([.day, .month, .year], from: selectedDay)
+        let day = components.day ?? 0
+        let month = components.month ?? 0
+        let year = components.year ?? 0
+        if event.day == day && event.month == month && event.year == year {
+            return true
+        }
+        return false
+    }
+    
+    func goToEdit(event: EventStruct) {
+        currEvent = event // make currEvent contain details of event that is tapped
+        day = event.day
+        month = event.month
+        year = event.year
+        desc = event.desc
+        startTime = event.startTime
+        endTime = event.endTime
+        category = event.category
+        completed = event.completed
+        showingEditEvent = true
+    }
+    
+    func toggleButton(oldEvent: EventStruct) {
+        var completedEvent = oldEvent
+        if completedEvent.completed == 1 {
+            completedEvent.completed = 0
+        } else {
+            completedEvent.completed = 1
+        }
+        
+        if oldEvent.category == "Exam" {
+            if let idx = myEvents.examEvents.firstIndex(of: oldEvent) {
+                myEvents.examEvents[idx] = completedEvent
+            }
+        } else if oldEvent.category == "Leisure" {
+            if let idx = myEvents.leisureEvents.firstIndex(of: oldEvent) {
+                myEvents.leisureEvents[idx] = completedEvent
+            }
+        } else if oldEvent.category == "Class" {
+            if let idx = myEvents.classEvents.firstIndex(of: oldEvent) {
+                myEvents.classEvents[idx] = completedEvent
+            }
+        } else if oldEvent.category == "Assignment" {
+            if let idx = myEvents.assignmentEvents.firstIndex(of: oldEvent) {
+                myEvents.assignmentEvents[idx] = completedEvent
+            }
+        } else if oldEvent.category == "Revision" {
+            if let idx = myEvents.revisionEvents.firstIndex(of: oldEvent) {
+                myEvents.revisionEvents[idx] = completedEvent
+            }
+        }
+        database.update(oldEvent: oldEvent, event: completedEvent)
+    }
+    
+    var TasksView: some View {
+        List {
+            Section(header: Text("Leisure")) {
+                leisureRow
+            }
+            Section(header: Text("Exam")) {
+                examRow
+            }
+            Section(header: Text("Class")) {
+                classRow
+            }
+            Section(header: Text("Assignment")) {
+                assignmentRow
+            }
+            Section(header: Text("Revision")) {
+                revisionRow
+            }
+        }
+        .onAppear() {
+            CalendarHelper().getEvents(database: database, myEvents: myEvents) // update array with data from database
+            CalendarHelper().sortCompleted(myEvent: myEvents) // sort completed/incomplete events in the array
+        }
+        .listStyle(.grouped)
+        .sheet(isPresented: $showingAddEvent) {
+            AddEvent(myEvents: myEvents, currDay: selectedDay)
+                .environmentObject(database)
+        }
+        .sheet(isPresented: $showingEditEvent) {
+            EditEvent(myEvents: myEvents, day: $day, month: $month, year: $year, desc: $desc, startTime: $startTime, endTime: $endTime, category: $category, completed: $completed, oldEvent: $currEvent)
+                .environmentObject(database)
         }
     }
     
@@ -107,21 +379,23 @@ struct Home: View {
                 
                 Text("Today")
                     .font(.largeTitle.bold())
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                 
             }
             .hLeading()
+            Button {
+                showingAddEvent = true
+            } label: {
+                Text("Add Event")
+                Image(systemName: "plus")
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+            
         }
         .padding()
-        .background(Color.white)
     }
 }
 
-struct Home_Previews: PreviewProvider {
-    static var previews: some View { 
-        Home()
-    }
- }
 
 extension View {
     func hLeading() -> some View {
