@@ -1,20 +1,14 @@
-import SwiftUI
 
-class Events: ObservableObject {
-    @Published var leisureEvents = [EventStruct]()
-    @Published var examEvents = [EventStruct]()
-    @Published var classEvents = [EventStruct]()
-    @Published var assignmentEvents = [EventStruct]()
-    @Published var revisionEvents = [EventStruct]()
-}
+import SwiftUI
 
 struct Calender: View {
     @EnvironmentObject var dateHolder: DateHolder
     @EnvironmentObject var database: DBHelper
-    @StateObject var myEvents = Events() // creating an instance of Events class to store array of different category of events
+    @ObservedObject var myEvents: Events 
     
-    @State private var viewType = "Monthly"
+    
     let views = ["Monthly", "Weekly"]
+    @Binding var viewType: String 
     
     
     // for bringing in DailyView
@@ -68,7 +62,6 @@ struct Calender: View {
     }
     
     var calendarGrid: some View {
-        
         VStack(spacing: 10) {
             let daysInMonth = CalendarHelper().daysInMonth(dateHolder.date)
             let firstDayOfMonth = CalendarHelper().firstOfMonth(dateHolder.date)
@@ -80,12 +73,12 @@ struct Calender: View {
                 HStack(spacing: 1) {
                     ForEach(1..<8) { column in
                         let count = column + (row * 7)
-                        let dayCell = CalendarHelper().monthStruct(currDate: dateHolder.date, count: count, startingSpaces: startingSpaces, daysInMonth: daysInMonth, daysInPrevMonth: daysInPrevMonth)
+                        let dayCell = CalendarHelper().monthStruct(currDate: dateHolder.date, count: count, startingSpaces: startingSpaces, daysInMonth: daysInMonth, daysInPrevMonth: daysInPrevMonth) // get MonthStruct of each day in calendar
                         Button {
-                            let selectedDay = dayCell.dayDetails
-                            CalendarHelper().getEvents(database: database, myEvents: myEvents)
-                            sortCompleted(myEvent: myEvents)
-                            goToDaily(selectedDay: selectedDay)
+                            let selectedDay = dayCell.dayDetails // get details of day that is tapped on
+                            CalendarHelper().getEvents(database: database, myEvents: myEvents) // update array with data from database
+                            CalendarHelper().sortCompleted(myEvent: myEvents) // sort completed/incomplete events in the array
+                            goToDaily(selectedDay: selectedDay) //
                             
                         } label: {
                             CalendarCell(dayCell: dayCell)
@@ -100,40 +93,11 @@ struct Calender: View {
     
     // bring up dailyview on the day which is tapped on
     func goToDaily(selectedDay: Date) {
-        
         daySelected = selectedDay
         showDaily = true
     }
     
-    func sortCompleted(myEvent: Events) {
-        myEvent.examEvents.sort {
-            $0.completed < $1.completed
-        }
-        myEvent.leisureEvents.sort {
-            $0.completed < $1.completed
-        }
-        myEvent.classEvents.sort {
-            $0.completed < $1.completed
-        }
-        myEvent.assignmentEvents.sort {
-            $0.completed < $1.completed
-        }
-        myEvent.revisionEvents.sort {
-            $0.completed < $1.completed
-        }
-    }
-}
-
-
-struct Calender_Previews: PreviewProvider {
-    @StateObject static var dateholder = DateHolder()
-    static var previews: some View {
-        let database = DBHelper()
-        Calender()
-            .environmentObject(dateholder)
-            .environmentObject(database)
-        
-    }
+    
 }
 
 
