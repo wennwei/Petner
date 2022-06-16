@@ -1,13 +1,33 @@
 import SwiftUI
 
+class Events: ObservableObject {
+    @Published var leisureEvents = [EventStruct]()
+    @Published var examEvents = [EventStruct]()
+    @Published var classEvents = [EventStruct]()
+    @Published var assignmentEvents = [EventStruct]()
+    @Published var revisionEvents = [EventStruct]()
+}
+
 struct ContentView: View {
+    @StateObject var myEvents = Events() // creating an instance of Events class to store array of different category of events
     @StateObject var database = DBHelper()
+    
+    let views = ["Monthly", "Weekly"]
+    @State private var viewType = "Weekly"
+    
     var body: some View {
         TabView {
-            Calender()
-                .tabItem {
-                    Label("Calendar", systemImage: "calendar")
-                }
+            if viewType == "Monthly" {
+                Calender(myEvents: myEvents, viewType: $viewType)
+                    .tabItem {
+                        Label("Calendar", systemImage: "calendar")
+                    }
+            } else {
+                WeeklyView(viewType: $viewType, myEvents: myEvents)
+                    .tabItem {
+                        Label("Calendar", systemImage: "calendar")
+                    }
+            }
             Preview()
                 .tabItem {
                     Label("Preview", systemImage: "list.dash")
