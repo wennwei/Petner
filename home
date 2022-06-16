@@ -10,7 +10,7 @@ struct WeeklyView: View {
     //picker for choosing monthly/weekly view
     let views = ["Monthly", "Weekly"]
     @Binding var viewType: String
-
+    
     @State private var selectedDay = Date.now
     @ObservedObject var myEvents: Events
     @EnvironmentObject var database: DBHelper
@@ -32,6 +32,10 @@ struct WeeklyView: View {
         NavigationView {
             VStack(spacing: 15) {
                 Section {
+                    
+                    ScrollView(
+                        .horizontal
+                        ,showsIndicators: false) {
                     HStack(spacing:10) {
                         
                         ForEach(taskModel.currentWeek, id:\.self) { day in
@@ -66,7 +70,7 @@ struct WeeklyView: View {
                                     withAnimation{
                                         taskModel.currentDay = day
                                         selectedDay = day
-
+                                        
                                     }
                                     /*ZStack{
                                      if taskModel.isToday(date: day){
@@ -77,10 +81,11 @@ struct WeeklyView: View {
                                 }
                             }
                         }
+                        }
                     }
                     .padding(.horizontal)
                     TasksView
-                
+                    
                 } header: {
                     HeaderView()
                 }
@@ -377,10 +382,10 @@ struct WeeklyView: View {
                 Text(Date().formatted(date: .abbreviated, time:.omitted))
                     .foregroundColor(.gray)
                 
-                Text("Today")
+                /*Text("Today")
                     .font(.largeTitle.bold())
                     .foregroundColor(.primary)
-                
+                 */
             }
             .hLeading()
             Button {
