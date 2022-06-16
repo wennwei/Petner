@@ -25,11 +25,11 @@ struct DailyView: View {
     
     var body: some View {
         List {
-            Section(header: Text("Exam")) {
-                examRow
-            }
             Section(header: Text("Leisure")) {
                 leisureRow
+            }
+            Section(header: Text("Exam")) {
+                examRow
             }
             Section(header: Text("Class")) {
                 classRow
@@ -84,7 +84,7 @@ struct DailyView: View {
                                 Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
                             }
                             .font(.title2)
-                            .foregroundColor(.green)
+                            .foregroundColor(.blue)
                         }
                         HStack {
                             Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
@@ -154,7 +154,7 @@ struct DailyView: View {
                                 Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
                             }
                             .font(.title2)
-                            .foregroundColor(.green)
+                            .foregroundColor(.orange)
                         }
                         HStack {
                             Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
@@ -189,7 +189,7 @@ struct DailyView: View {
                                 Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
                             }
                             .font(.title2)
-                            .foregroundColor(.green)
+                            .foregroundColor(.purple)
                         }
                         HStack {
                             Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
@@ -224,7 +224,7 @@ struct DailyView: View {
                                 Image(systemName: (event.completed != 0) ? "checkmark.square.fill" : "square")
                             }
                             .font(.title2)
-                            .foregroundColor(.green)
+                            .foregroundColor(.yellow)
                         }
                         HStack {
                             Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
@@ -292,5 +292,4 @@ struct DailyView: View {
         }
         database.update(oldEvent: oldEvent, event: completedEvent)
     }
-    
 }
