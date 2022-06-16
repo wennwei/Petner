@@ -118,4 +118,23 @@ class CalendarHelper {
             }
         }
     }
+    
+    //sort array according to completed/incomplete events
+    func sortCompleted(myEvent: Events) {
+        myEvent.examEvents.sort {
+            $0.completed < $1.completed
+        }
+        myEvent.leisureEvents.sort {
+            $0.completed < $1.completed
+        }
+        myEvent.classEvents.sort {
+            $0.completed < $1.completed
+        }
+        myEvent.assignmentEvents.sort {
+            $0.completed < $1.completed
+        }
+        myEvent.revisionEvents.sort {
+            $0.completed < $1.completed
+        }
+    }
 }
