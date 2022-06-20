@@ -42,6 +42,9 @@ struct Preview: View {
         ForEach(0...6, id: \.self) { count in 
             ForEach(myEvents.examEvents, id: \.self) { event in
                 let counter = 86400 * count
+                if Calendar.current.isDateInWeekend(date: Date()) {
+                    counter = counter * -1
+                }
                 if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
                     Button {} label: {
                         VStack {
@@ -76,6 +79,9 @@ struct Preview: View {
         ForEach(1...7, id:\.self) { count in
         ForEach(myEvents.leisureEvents, id: \.self) { event in
             let counter = 86400 * count
+            if Calendar.current.isDateInWeekend(date: Date()) {
+                counter = counter * -1
+            }
             if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
                 Button {} label: {
                     VStack {
@@ -109,6 +115,9 @@ struct Preview: View {
         ForEach(1...7, id:\.self) { count in
         ForEach(myEvents.classEvents, id: \.self) { event in
             let counter = 86400 * count
+            if Calendar.current.isDateInWeekend(date: Date()) {
+                counter = counter * -1
+            }
             if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
                 Button {} label: {
                     VStack {
@@ -142,6 +151,9 @@ struct Preview: View {
         ForEach(1...7, id: \.self) { count in
         ForEach(myEvents.assignmentEvents, id: \.self) { event in
             let counter = 86400 * count
+            if Calendar.current.isDateInWeekend(date: Date()) {
+                counter = counter * -1
+            }
             if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
                 Button {} label: {
                     VStack {
@@ -175,6 +187,9 @@ struct Preview: View {
         ForEach(1...7, id: \.self) { count in
         ForEach(myEvents.revisionEvents, id: \.self) { event in
             let counter = 86400 * count
+            if Calendar.current.isDateInWeekend(date: Date()) {
+                counter = counter * -1
+            }
             if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
                 Button {} label: {
                     VStack {
@@ -293,4 +308,3 @@ struct Preview: View {
         }
     }
 }
-
