@@ -41,10 +41,7 @@ struct Preview: View {
     var examRow: some View {
         ForEach(0...6, id: \.self) { count in 
             ForEach(myEvents.examEvents, id: \.self) { event in
-                let counter = 86400 * count
-                if Calendar.current.isDateInWeekend(date: Date()) {
-                    counter = counter * -1
-                }
+                let counter = 86400 * checkIfWeekend(selectedDay: Date(), counter: count)
                 if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
                     Button {} label: {
                         VStack {
@@ -76,12 +73,9 @@ struct Preview: View {
     
     
     var leisureRow: some View {
-        ForEach(1...7, id:\.self) { count in
+        ForEach(0...6, id:\.self) { count in
         ForEach(myEvents.leisureEvents, id: \.self) { event in
-            let counter = 86400 * count
-            if Calendar.current.isDateInWeekend(date: Date()) {
-                counter = counter * -1
-            }
+            let counter = 86400 * checkIfWeekend(selectedDay: Date(), counter: count)
             if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
                 Button {} label: {
                     VStack {
@@ -112,12 +106,9 @@ struct Preview: View {
     }
     
     var classRow: some View {
-        ForEach(1...7, id:\.self) { count in
+        ForEach(0...6, id:\.self) { count in
         ForEach(myEvents.classEvents, id: \.self) { event in
-            let counter = 86400 * count
-            if Calendar.current.isDateInWeekend(date: Date()) {
-                counter = counter * -1
-            }
+            let counter = 86400 * checkIfWeekend(selectedDay: Date(), counter: count)
             if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
                 Button {} label: {
                     VStack {
@@ -148,12 +139,9 @@ struct Preview: View {
     }
     
     var assignmentRow: some View {
-        ForEach(1...7, id: \.self) { count in
+        ForEach(0...6, id: \.self) { count in
         ForEach(myEvents.assignmentEvents, id: \.self) { event in
-            let counter = 86400 * count
-            if Calendar.current.isDateInWeekend(date: Date()) {
-                counter = counter * -1
-            }
+            let counter = 86400 * checkIfWeekend(selectedDay: Date(), counter: count)
             if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
                 Button {} label: {
                     VStack {
@@ -184,12 +172,9 @@ struct Preview: View {
     }
     
     var revisionRow: some View {
-        ForEach(1...7, id: \.self) { count in
+        ForEach(0...6, id: \.self) { count in
         ForEach(myEvents.revisionEvents, id: \.self) { event in
-            let counter = 86400 * count
-            if Calendar.current.isDateInWeekend(date: Date()) {
-                counter = counter * -1
-            }
+            let counter = 86400 * checkIfWeekend(selectedDay: Date(), counter: count)
             if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
                 Button {} label: {
                     VStack {
@@ -228,6 +213,13 @@ struct Preview: View {
             return true
         }
         return false
+    }
+    
+    func checkIfWeekend(selectedDay: Date, counter: Int) -> Int {
+        if Calendar.current.isDateInWeekend(selectedDay) {
+            return counter * -1
+        }
+        return counter
     }
     
     func goToEdit(event: EventStruct) {
