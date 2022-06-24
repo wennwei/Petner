@@ -87,7 +87,7 @@ struct DailyView: View {
                             .foregroundColor(.blue)
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -122,7 +122,7 @@ struct DailyView: View {
                             .foregroundColor(.green)
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -157,7 +157,7 @@ struct DailyView: View {
                             .foregroundColor(.orange)
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -192,7 +192,7 @@ struct DailyView: View {
                             .foregroundColor(.purple)
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -227,7 +227,7 @@ struct DailyView: View {
                             .foregroundColor(.yellow)
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
