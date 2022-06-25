@@ -60,7 +60,7 @@ struct Preview: View {
                             Spacer()
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -94,7 +94,7 @@ struct Preview: View {
                             Spacer()
                         }
                         HStack {
-                            Text("Starts: \(event.startTime) Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00 Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -127,7 +127,7 @@ struct Preview: View {
                             Spacer()
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -160,7 +160,7 @@ struct Preview: View {
                             Spacer()
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -193,7 +193,7 @@ struct Preview: View {
                             Spacer()
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
