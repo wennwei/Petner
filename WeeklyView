@@ -134,7 +134,7 @@ struct WeeklyView: View {
                             .foregroundColor(.blue)
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -169,7 +169,7 @@ struct WeeklyView: View {
                             .foregroundColor(.green)
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -204,7 +204,7 @@ struct WeeklyView: View {
                             .foregroundColor(.orange)
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -239,7 +239,7 @@ struct WeeklyView: View {
                             .foregroundColor(.purple)
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
@@ -274,7 +274,7 @@ struct WeeklyView: View {
                             .foregroundColor(.yellow)
                         }
                         HStack {
-                            Text("Starts: \(event.startTime)  Ends: \(event.endTime)")
+                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
                             Spacer()
                         }
                     }
