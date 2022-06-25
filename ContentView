@@ -28,11 +28,11 @@ struct ContentView: View {
                         Label("Calendar", systemImage: "calendar")
                     }
             }
-            Preview()
+            Preview(myEvents: myEvents)
                 .tabItem {
                     Label("Preview", systemImage: "list.dash")
                 }
-            Review()
+            Review(myEvents: myEvents)
                 .tabItem {
                     Label("Review", systemImage: "checklist")
                 }
@@ -52,6 +52,7 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
             .environmentObject(dateHolder)
             .environmentObject(database)
-
+        
     }
 }
+
