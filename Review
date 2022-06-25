@@ -1,31 +1,421 @@
 import SwiftUI
 
+struct DataItem: Identifiable {
+    let name: String
+    let value: Double
+    let id = UUID()
+}
+
+//Array for counting completed events for the week
+var completedValuesCurrentWeek = [Int]()
+var completedValuesPreviousWeek = [Int]()
+
 struct Review: View {
+    @ObservedObject var myEvents: Events
+    @EnvironmentObject var database: DBHelper
+    @EnvironmentObject var dateHolder : DateHolder
+    
+    var chartData: [DataItem] = [
+        DataItem(name: "Exam", value: 0),
+        DataItem(name: "Leisure", value: 0),
+        DataItem(name: "Class", value: 0),
+        DataItem(name: "Assignment", value: 0),
+        DataItem(name: "Revision", value: 0)
+    ]
+    
     var body: some View {
-        NavigationView {
-            List {
-                Section {
-                    Text("Event 1")
-                    
-                } header: {
-                    Text("Previous Week")
-                }
-                Section {
-                    Text("Event 2")
-                    
-                } header: {
-                    Text("Current Week")
-                }
-            }
-            .listStyle(.sidebar)
+        VStack {
+            Text("Review")
+            .font(.title)
             
-            .navigationTitle("Review")
+            BarChartViewCurrentWeek(
+                myEvents: myEvents, title: "Completed events in current week", data: chartData)
+            .frame(width:300, height:240, alignment:.leading)
+            
+            Spacer().frame(height:30)
+            
+            BarChartViewPreviousWeek(myEvents: myEvents, title: "Completed events in previous week", data: chartData)
+            .frame(width:300, height:240, alignment: .center)
         }
     }
 }
 
-struct Review_Previews: PreviewProvider {
-    static var previews: some View {
-        Review()
+//Bar chart view for the current week progress
+struct BarChartViewCurrentWeek: View {
+    @ObservedObject var myEvents: Events
+    var title: String
+    var data:[DataItem]
+    
+    var body: some View {
+        GeometryReader { gr in
+            let headHeight = gr.size.height * 0.10
+            VStack {
+                ChartHeaderView(title: title, height: headHeight)
+                ChartAreaViewCurrentWeek(myEvents: myEvents, data: data)
+            }
+        }
     }
 }
+//Bar chart view for the previous week progress
+struct BarChartViewPreviousWeek: View {
+    @ObservedObject var myEvents: Events
+    var title: String
+    var data:[DataItem]
+    
+    var body: some View {
+        GeometryReader { gr in
+            let headHeight = gr.size.height * 0.10
+            VStack {
+                ChartHeaderView(title: title, height: headHeight)
+                ChartAreaViewPreviousWeek(myEvents: myEvents, data: data)
+            }
+        }
+    }
+}
+
+struct ChartHeaderView: View {
+    var title: String
+    var height: CGFloat
+    
+    var body: some View {
+        Text(title)
+            .frame(height: height)
+    }
+}
+
+//Chart for current week
+struct ChartAreaViewCurrentWeek: View {
+    
+    @State private var weekday = Calendar.current.nextWeekend(startingAfter: Date(), direction: .backward)?.end
+    @ObservedObject var myEvents: Events
+    
+    //Get most completed events for category in the week
+    //For determining length of bars
+    func getMaxValue() -> Int {
+        
+        var examValue = 0
+        var classValue = 0
+        var assignmentValue = 0
+        var revisionValue = 0
+        var leisureValue = 0
+        for num in 0...6 {
+            for event in myEvents.examEvents {
+                let counter = 86400 * num
+                if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
+                    examValue += event.completed
+                }
+            }
+            
+            for event in myEvents.leisureEvents {
+                let counter = 86400 * num
+                if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
+                    leisureValue += event.completed
+                }
+            }
+            
+            for event in myEvents.classEvents {
+                let counter = 86400 * num
+                if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
+                    classValue += event.completed
+                }
+            }
+            
+            for event in myEvents.revisionEvents {
+                let counter = 86400 * num
+                if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
+                    revisionValue += event.completed
+                }
+            }
+            
+            for event in myEvents.assignmentEvents {
+                let counter = 86400 * num
+                if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
+                    assignmentValue += event.completed
+                }
+            }
+        }
+        completedValuesCurrentWeek.append(examValue)
+        completedValuesCurrentWeek.append(leisureValue)
+        completedValuesCurrentWeek.append(classValue)
+        completedValuesCurrentWeek.append(revisionValue)
+        completedValuesCurrentWeek.append(assignmentValue)
+        return completedValuesCurrentWeek.max()!
+    }
+    
+    //Get total number of completed events for the week for each individual category
+    func getValue(eventName: String) -> Int {
+        var addedValue = 0
+        for num in 0...6 {
+            if eventName == "Exam" {
+                for event in myEvents.examEvents {
+                    let counter = 86400 * num
+                    if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
+                        addedValue += event.completed
+                    }
+                }
+            }
+            if eventName == "Leisure" {
+                for event in myEvents.leisureEvents {
+                    let counter = 86400 * num
+                    if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
+                        addedValue += event.completed
+                    }
+                }
+            }
+            if eventName == "Class" {
+                for event in myEvents.classEvents {
+                    let counter = 86400 * num
+                    if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
+                        addedValue += event.completed
+                    }
+                }
+            }
+            if eventName == "Assignment" {
+                for event in myEvents.assignmentEvents {
+                    let counter = 86400 * num
+                    if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
+                        addedValue += event.completed
+                    }
+                }
+            }
+            if eventName == "Revision" {
+                for event in myEvents.revisionEvents {
+                    let counter = 86400 * num
+                    if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
+                        addedValue += event.completed
+                    }
+                }
+            }
+        }
+        return addedValue
+        
+    }
+    
+    func checkIfSameDay(selectedDay: Date, event: EventStruct) -> Bool {
+        let components = Calendar.current.dateComponents([.day, .month, .year], from: selectedDay)
+        let day = components.day ?? 0
+        let month = components.month ?? 0
+        let year = components.year ?? 0
+        if event.day == day && event.month == month && event.year == year {
+            return true
+        }
+        return false
+    }
+    
+    var data:[DataItem]
+    var body: some View {
+        GeometryReader { gr in
+            let fullBarHeight = gr.size.height * 0.9
+            let maxValue = getMaxValue()
+            
+            ZStack{
+                RoundedRectangle(cornerRadius: 5.0)
+                    .fill(Color(#colorLiteral(red:0.8906477705, green: 0.9005050659, blue:0.8208766097, alpha:1)))
+                
+                VStack {
+                    HStack(spacing:0) {
+                        ForEach(data) { item in 
+                            BarView(
+                                name: item.name,
+                                value: item.value + Double(getValue(eventName: item.name)),
+                                maxValue: Double(maxValue),
+                                fullBarHeight: Double(fullBarHeight))
+                            
+                        }
+                    }
+                    .padding(4)
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+}
+
+//Chart for pevious week
+struct ChartAreaViewPreviousWeek: View {
+    @State private var previousweekday = Calendar.current.nextWeekend(startingAfter: Date().advanced(by: 86400 * -7), direction: .backward)?.end
+    @State private var weekday = Calendar.current.nextWeekend(startingAfter: Date(), direction: .backward)?.end
+    @ObservedObject var myEvents: Events
+    
+    func getMaxValue() -> Int {
+        
+        var examValue = 0
+        var classValue = 0
+        var assignmentValue = 0
+        var revisionValue = 0
+        var leisureValue = 0
+        for num in 0...6 {
+            for event in myEvents.examEvents {
+                let counter = 86400 * num
+                if checkIfSameDay(selectedDay: previousweekday!.advanced(by: TimeInterval(counter)), event: event) {
+                    examValue += event.completed
+                }
+            }
+            
+            for event in myEvents.leisureEvents {
+                let counter = 86400 * num
+                if checkIfSameDay(selectedDay: previousweekday!.advanced(by: TimeInterval(counter)), event: event) {
+                    leisureValue += event.completed
+                }
+            }
+            
+            for event in myEvents.classEvents {
+                let counter = 86400 * num
+                if checkIfSameDay(selectedDay: previousweekday!.advanced(by: TimeInterval(counter)), event: event) {
+                    classValue += event.completed
+                }
+            }
+            
+            for event in myEvents.revisionEvents {
+                let counter = 86400 * num
+                if checkIfSameDay(selectedDay: previousweekday!.advanced(by: TimeInterval(counter)), event: event) {
+                    revisionValue += event.completed
+                }
+            }
+            
+            for event in myEvents.assignmentEvents {
+                let counter = 86400 * num
+                if checkIfSameDay(selectedDay: previousweekday!.advanced(by: TimeInterval(counter)), event: event) {
+                    assignmentValue += event.completed
+                }
+            }
+        }
+        completedValuesPreviousWeek.append(examValue)
+        completedValuesPreviousWeek.append(leisureValue)
+        completedValuesPreviousWeek.append(classValue)
+        completedValuesPreviousWeek.append(revisionValue)
+        completedValuesPreviousWeek.append(assignmentValue)
+        return completedValuesPreviousWeek.max()!
+    }
+    
+    func getValue(eventName: String) -> Int {
+        var addedValue = 0
+        for num in 0...6 {
+            if eventName == "Exam" {
+                for event in myEvents.examEvents {
+                    let counter = 86400 * num
+                    if checkIfSameDay(selectedDay: previousweekday!.advanced(by: TimeInterval(counter)), event: event) {
+                        addedValue += event.completed
+                    }
+                }
+            }
+            if eventName == "Leisure" {
+                for event in myEvents.leisureEvents {
+                    let counter = 86400 * num
+                    if checkIfSameDay(selectedDay: previousweekday!.advanced(by: TimeInterval(counter)), event: event) {
+                        addedValue += event.completed
+                    }
+                }
+            }
+            if eventName == "Class" {
+                for event in myEvents.classEvents {
+                    let counter = 86400 * num
+                    if checkIfSameDay(selectedDay: previousweekday!.advanced(by: TimeInterval(counter)), event: event) {
+                        addedValue += event.completed
+                    }
+                }
+            }
+            if eventName == "Assignment" {
+                for event in myEvents.assignmentEvents {
+                    let counter = 86400 * num
+                    if checkIfSameDay(selectedDay: previousweekday!.advanced(by: TimeInterval(counter)), event: event) {
+                        addedValue += event.completed
+                    }
+                }
+            }
+            if eventName == "Revision" {
+                for event in myEvents.revisionEvents {
+                    let counter = 86400 * num
+                    if checkIfSameDay(selectedDay: previousweekday!.advanced(by: TimeInterval(counter)), event: event) {
+                        addedValue += event.completed
+                    }
+                }
+            }
+        }
+        return addedValue
+        
+    }
+    
+    func checkIfSameDay(selectedDay: Date, event: EventStruct) -> Bool {
+        let components = Calendar.current.dateComponents([.day, .month, .year], from: selectedDay)
+        let day = components.day ?? 0
+        let month = components.month ?? 0
+        let year = components.year ?? 0
+        if event.day == day && event.month == month && event.year == year {
+            return true
+        }
+        return false
+    }
+    
+    var data:[DataItem]
+    var body: some View {
+        GeometryReader { gr in
+            let fullBarHeight = gr.size.height * 0.9
+            let maxValue = getMaxValue()//data.map{ $0.value}.max()!
+            
+            ZStack{
+                RoundedRectangle(cornerRadius: 5.0)
+                    .fill(Color(#colorLiteral(red:0.8906477705, green: 0.9005050659, blue:0.8208766097, alpha:1)))
+                
+                VStack {
+                    HStack(spacing:0) {
+                        ForEach(data) { item in 
+                            BarView(
+                                name: item.name,
+                                value: item.value + Double(getValue(eventName: item.name)),
+                                maxValue: Double(maxValue),
+                                fullBarHeight: Double(fullBarHeight))
+                            
+                        }
+                    }
+                    .padding(4)
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+}
+
+
+struct BarView: View {
+    var name: String
+    var value: Double
+    var maxValue: Double
+    var fullBarHeight: Double
+    
+    var body: some View {
+        let barHeight = (Double(fullBarHeight) / maxValue) * value
+        VStack {
+            Spacer()
+            ZStack{
+                VStack{
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 5.0)
+                        .fill(Color.blue)
+                        .frame(height: CGFloat(barHeight), alignment: .trailing)
+                }
+                VStack{
+                    Spacer()
+                    Text("\(value, specifier:"%.0F")")
+                        .font(.footnote)
+                        .foregroundColor(.black)
+                        .fontWeight(.bold)
+                }
+            }
+            Text(name)
+                .foregroundColor(.black)
+                .font(.system(size:8))
+                .fontWeight(.bold)
+        }
+        .padding(.horizontal, 4)
+    }
+}
+
