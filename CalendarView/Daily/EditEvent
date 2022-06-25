@@ -40,13 +40,13 @@ struct EditEvent: View {
                 .pickerStyle(.segmented)
                 Picker("Start Time", selection: $startTime) {
                     ForEach(0..<24) {
-                        Text("\($0)")
+                        Text("\($0):00")
                     }
                 }
                 // Can edit to range from start time to 23
                 Picker("End Time", selection: $endTime) {
                     ForEach(0..<24) {
-                        Text("\($0)")
+                        Text("\($0):00")
                     }
                 }
                 
