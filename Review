@@ -86,7 +86,7 @@ struct ChartHeaderView: View {
 //Chart for current week
 struct ChartAreaViewCurrentWeek: View {
     
-    @State private var weekday = Calendar.current.nextWeekend(startingAfter: Date(), direction: .backward)?.end
+    @State private var weekday = Calendar.current.nextWeekend(startingAfter: Date(), direction: .backward)?.start
     @ObservedObject var myEvents: Events
     
     //Get most completed events for category in the week
@@ -98,7 +98,7 @@ struct ChartAreaViewCurrentWeek: View {
         var assignmentValue = 0
         var revisionValue = 0
         var leisureValue = 0
-        for num in 0...6 {
+        for num in 1...7 {
             for event in myEvents.examEvents {
                 let counter = 86400 * num
                 if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
@@ -145,7 +145,7 @@ struct ChartAreaViewCurrentWeek: View {
     //Get total number of completed events for the week for each individual category
     func getValue(eventName: String) -> Int {
         var addedValue = 0
-        for num in 0...6 {
+        for num in 1...7 {
             if eventName == "Exam" {
                 for event in myEvents.examEvents {
                     let counter = 86400 * num
@@ -237,8 +237,8 @@ struct ChartAreaViewCurrentWeek: View {
 
 //Chart for pevious week
 struct ChartAreaViewPreviousWeek: View {
-    @State private var previousweekday = Calendar.current.nextWeekend(startingAfter: Date().advanced(by: 86400 * -7), direction: .backward)?.end
-    @State private var weekday = Calendar.current.nextWeekend(startingAfter: Date(), direction: .backward)?.end
+    @State private var previousweekday = Calendar.current.nextWeekend(startingAfter: Date().advanced(by: 86400 * -7), direction: .backward)?.start
+    @State private var weekday = Calendar.current.nextWeekend(startingAfter: Date(), direction: .backward)?.start
     @ObservedObject var myEvents: Events
     
     func getMaxValue() -> Int {
@@ -294,7 +294,7 @@ struct ChartAreaViewPreviousWeek: View {
     
     func getValue(eventName: String) -> Int {
         var addedValue = 0
-        for num in 0...6 {
+        for num in 1...7 {
             if eventName == "Exam" {
                 for event in myEvents.examEvents {
                     let counter = 86400 * num
@@ -418,4 +418,6 @@ struct BarView: View {
         .padding(.horizontal, 4)
     }
 }
+
+
 
