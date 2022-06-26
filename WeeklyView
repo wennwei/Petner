@@ -10,7 +10,7 @@ struct WeeklyView: View {
     //picker for choosing monthly/weekly view
     let views = ["Monthly", "Weekly"]
     @Binding var viewType: String
-    
+
     @State private var selectedDay = Date.now
     @ObservedObject var myEvents: Events
     @EnvironmentObject var database: DBHelper
@@ -32,60 +32,55 @@ struct WeeklyView: View {
         NavigationView {
             VStack(spacing: 15) {
                 Section {
-                    
-                    ScrollView(
-                        .horizontal
-                        ,showsIndicators: false) {
-                    HStack(spacing:10) {
-                        
-                        ForEach(taskModel.currentWeek, id:\.self) { day in
-                            Button {
-                                taskModel.currentDay = day
-                                selectedDay = day
-                                for dog in myEvents.leisureEvents {
-                                    print(dog)
-                                }
-                            } label: {
-                                VStack(spacing:10) {
+                    ScrollView(.horizontal,showsIndicators: false) {
+                        HStack(spacing:10) {
+                            
+                            ForEach(taskModel.currentWeek, id:\.self) { day in
+                                Button {
+                                    taskModel.currentDay = day
+                                    selectedDay = day
                                     
-                                    Text(taskModel.extractDate(date: day, format: "dd"))
-                                        .font(.system(size:15))
-                                        .fontWeight(.semibold)
-                                    
-                                    Text(taskModel.extractDate(date: day, format: "EEE"))
-                                        .font(.system(size:14))
-                                    
-                                    Circle()
-                                        .fill(.red)
-                                        .frame(width:8, height:8)
-                                        .opacity(taskModel.isToday(date: day) ? 1 :0)
-                                    
-                                }
-                                .foregroundStyle(taskModel.isToday(date: day) ? .red : .primary)
-                                .foregroundColor(taskModel.isToday(date: day) ? .red : .primary)
-                                .frame(width:45, height: 90)
-                                .background()
-                                .contentShape(Capsule())
-                                .onTapGesture{
-                                    withAnimation{
-                                        taskModel.currentDay = day
-                                        selectedDay = day
+                                } label: {
+                                    VStack(spacing:10) {
+                                        
+                                        Text(taskModel.extractDate(date: day, format: "dd"))
+                                            .font(.system(size:15))
+                                            .fontWeight(.semibold)
+                                        
+                                        Text(taskModel.extractDate(date: day, format: "EEE"))
+                                            .font(.system(size:14))
+                                        
+                                        Circle()
+                                            .fill(.red)
+                                            .frame(width:8, height:8)
+                                            .opacity(taskModel.isToday(date: day) ? 1 :0)
                                         
                                     }
-                                    /*ZStack{
-                                     if taskModel.isToday(date: day){
-                                     Capsule()
-                                     .fill(.black)
-                                     .matchedGeometryEffect(id: "CurrentDay", in: animation)
-                                     } */
+                                    .foregroundStyle(taskModel.isToday(date: day) ? .red : .primary)
+                                    .foregroundColor(taskModel.isToday(date: day) ? .red : .primary)
+                                    .frame(width:45, height: 90)
+                                    .background()
+                                    .contentShape(Capsule())
+                                    .onTapGesture{
+                                        withAnimation{
+                                            taskModel.currentDay = day
+                                            selectedDay = day
+
+                                        }
+                                        /*ZStack{
+                                         if taskModel.isToday(date: day){
+                                         Capsule()
+                                         .fill(.black)
+                                         .matchedGeometryEffect(id: "CurrentDay", in: animation)
+                                         } */
+                                    }
                                 }
                             }
-                        }
                         }
                     }
                     .padding(.horizontal)
                     TasksView
-                    
+                
                 } header: {
                     HeaderView()
                 }
@@ -384,8 +379,8 @@ struct WeeklyView: View {
                 
                 /*Text("Today")
                     .font(.largeTitle.bold())
-                    .foregroundColor(.primary)
-                 */
+                    .foregroundColor(.primary)*/
+                
             }
             .hLeading()
             Button {
