@@ -25,184 +25,193 @@ struct Preview: View {
         NavigationView {
             VStack(spacing: 0) {
                 Text("")
-                    .navigationTitle("Preview")
                 TasksView
-                    }
-                }
-        }
-        /*NavigationView {
-            Text("")
-            //.navigationTitle("Preview")
-            TasksView
-            
-        }
-    }*/
-    
-    var examRow: some View {
-        ForEach(0...6, id: \.self) { count in 
-            ForEach(myEvents.examEvents, id: \.self) { event in
-                let counter = 86400 * checkIfWeekend(selectedDay: Date(), counter: count)
-                if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
-                    Button {} label: {
-                        VStack {
-                            HStack {
-                                Text(event.desc)
-                                    .font(.title3)
-                                    .fontWeight(.semibold)
-                                    .padding(.bottom, 8)
-                                    .padding(.top, 5)
-                            
-                                Spacer()
-                            
-                            }
-                        HStack {
-                            Text("Date: \(event.day) / \(event.month)")
-                            Spacer()
-                        }
-                        HStack {
-                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
-                            Spacer()
-                        }
-                    }
-                }
-                .foregroundColor(.primary)
             }
+            .navigationTitle("Preview")
         }
-    }
     }
     
     
     var leisureRow: some View {
-        ForEach(0...6, id:\.self) { count in
-        ForEach(myEvents.leisureEvents, id: \.self) { event in
-            let counter = 86400 * checkIfWeekend(selectedDay: Date(), counter: count)
-            if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
-                Button {} label: {
-                    VStack {
-                        HStack {
-                            Text(event.desc)
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                                .padding(.bottom, 8)
-                                .padding(.top, 5)
-                            
-                            Spacer()
-                            
+        ForEach(0...6, id: \.self) { count in
+            let today = Date()
+            let calendar = Calendar.current
+            if let next7days = calendar.date(byAdding: .day, value: count, to: today) {
+                ForEach(myEvents.leisureEvents, id: \.self) { event in
+                    if checkIfSameDay(selectedDay: next7days, event: event) {
+                        Button {} label: {
+                            VStack {
+                                HStack {
+                                    Text(event.desc)
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                        .padding(.bottom, 8)
+                                        .padding(.top, 5)
+                                
+                                    Spacer()
+                                
+                                }
+                                HStack {
+                                    Text("Date: \(event.day) / \(event.month)")
+                                    Spacer()
+                                }
+                                HStack {
+                                    Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
+                                    Spacer()
+                                }
+                            }
                         }
-                        HStack {
-                            Text("Date: \(event.day) / \(event.month)")
-                            Spacer()
-                        }
-                        HStack {
-                            Text("Starts: \(event.startTime):00 Ends: \(event.endTime):00")
-                            Spacer()
-                        }
+                        .foregroundColor(.primary)
                     }
                 }
-                .foregroundColor(.primary)
             }
         }
     }
+    
+    var examRow: some View {
+        ForEach(0...6, id: \.self) { count in
+            let today = Date()
+            let calendar = Calendar.current
+            if let next7days = calendar.date(byAdding: .day, value: count, to: today) {
+                ForEach(myEvents.examEvents, id: \.self) { event in
+                    if checkIfSameDay(selectedDay: next7days, event: event) {
+                        Button {} label: {
+                            VStack {
+                                HStack {
+                                    Text(event.desc)
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                        .padding(.bottom, 8)
+                                        .padding(.top, 5)
+                                
+                                    Spacer()
+                                
+                                }
+                                HStack {
+                                    Text("Date: \(event.day) / \(event.month)")
+                                    Spacer()
+                                }
+                                HStack {
+                                    Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
+                                    Spacer()
+                                }
+                            }
+                        }
+                        .foregroundColor(.primary)
+                    }
+                }
+            }
+        }
     }
     
     var classRow: some View {
-        ForEach(0...6, id:\.self) { count in
-        ForEach(myEvents.classEvents, id: \.self) { event in
-            let counter = 86400 * checkIfWeekend(selectedDay: Date(), counter: count)
-            if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
-                Button {} label: {
-                    VStack {
-                        HStack {
-                            Text(event.desc)
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                                .padding(.bottom, 8)
-                                .padding(.top, 5)
-                            
-                            Spacer()
-                            
+        ForEach(0...6, id: \.self) { count in
+            let today = Date()
+            let calendar = Calendar.current
+            if let next7days = calendar.date(byAdding: .day, value: count, to: today) {
+                ForEach(myEvents.classEvents, id: \.self) { event in
+                    if checkIfSameDay(selectedDay: next7days, event: event) {
+                        Button {} label: {
+                            VStack {
+                                HStack {
+                                    Text(event.desc)
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                        .padding(.bottom, 8)
+                                        .padding(.top, 5)
+                                
+                                    Spacer()
+                                
+                                }
+                                HStack {
+                                    Text("Date: \(event.day) / \(event.month)")
+                                    Spacer()
+                                }
+                                HStack {
+                                    Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
+                                    Spacer()
+                                }
+                            }
                         }
-                        HStack {
-                            Text("Date: \(event.day) / \(event.month)")
-                            Spacer()
-                        }
-                        HStack {
-                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
-                            Spacer()
-                        }
+                        .foregroundColor(.primary)
                     }
                 }
-                .foregroundColor(.primary)
             }
         }
-    }
     }
     
     var assignmentRow: some View {
         ForEach(0...6, id: \.self) { count in
-        ForEach(myEvents.assignmentEvents, id: \.self) { event in
-            let counter = 86400 * checkIfWeekend(selectedDay: Date(), counter: count)
-            if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
-                Button {} label: {
-                    VStack {
-                        HStack {
-                            Text(event.desc)
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                                .padding(.bottom, 8)
-                                .padding(.top, 5)
-                            
-                            Spacer()
-                            
+            let today = Date()
+            let calendar = Calendar.current
+            if let next7days = calendar.date(byAdding: .day, value: count, to: today) {
+                ForEach(myEvents.assignmentEvents, id: \.self) { event in
+                    if checkIfSameDay(selectedDay: next7days, event: event) {
+                        Button {} label: {
+                            VStack {
+                                HStack {
+                                    Text(event.desc)
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                        .padding(.bottom, 8)
+                                        .padding(.top, 5)
+                                
+                                    Spacer()
+                                
+                                }
+                                HStack {
+                                    Text("Date: \(event.day) / \(event.month)")
+                                    Spacer()
+                                }
+                                HStack {
+                                    Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
+                                    Spacer()
+                                }
+                            }
                         }
-                        HStack {
-                            Text("Date: \(event.day) / \(event.month)")
-                            Spacer()
-                        }
-                        HStack {
-                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
-                            Spacer()
-                        }
+                        .foregroundColor(.primary)
                     }
                 }
-                .foregroundColor(.primary)
             }
         }
-    }
     }
     
     var revisionRow: some View {
         ForEach(0...6, id: \.self) { count in
-        ForEach(myEvents.revisionEvents, id: \.self) { event in
-            let counter = 86400 * checkIfWeekend(selectedDay: Date(), counter: count)
-            if checkIfSameDay(selectedDay: weekday!.advanced(by: TimeInterval(counter)), event: event) {
-                Button {} label: {
-                    VStack {
-                        HStack {
-                            Text(event.desc)
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                                .padding(.bottom, 8)
-                                .padding(.top, 5)
-                            
-                            Spacer()
-                            
+            let today = Date()
+            let calendar = Calendar.current
+            if let next7days = calendar.date(byAdding: .day, value: count, to: today) {
+                ForEach(myEvents.revisionEvents, id: \.self) { event in
+                    if checkIfSameDay(selectedDay: next7days, event: event) {
+                        Button {} label: {
+                            VStack {
+                                HStack {
+                                    Text(event.desc)
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                        .padding(.bottom, 8)
+                                        .padding(.top, 5)
+                                
+                                    Spacer()
+                                
+                                }
+                                HStack {
+                                    Text("Date: \(event.day) / \(event.month)")
+                                    Spacer()
+                                }
+                                HStack {
+                                    Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
+                                    Spacer()
+                                }
+                            }
                         }
-                        HStack {
-                            Text("Date: \(event.day) / \(event.month)")
-                            Spacer()
-                        }
-                        HStack {
-                            Text("Starts: \(event.startTime):00  Ends: \(event.endTime):00")
-                            Spacer()
-                        }
+                        .foregroundColor(.primary)
                     }
                 }
-                .foregroundColor(.primary)
             }
         }
     }
-    }
+    
     
     func checkIfSameDay(selectedDay: Date, event: EventStruct) -> Bool {
         let components = Calendar.current.dateComponents([.day, .month, .year], from: selectedDay)
