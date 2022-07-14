@@ -1,0 +1,63 @@
+import SwiftUI
+
+struct Shop: View {
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 15) {
+                Text("Shop")
+                    .font(.largeTitle)
+                Section {
+                    Text("Hat                                                  20 coins").hLeading()
+                    ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        //insert images here
+                        ForEach(0..<10) {
+                            Text("Item \($0)")
+                                .foregroundColor(.white)
+                                .font(.body)
+                                .frame(width: 100, height: 100)
+                                .background(.white)
+                        }
+                    }
+                }
+                    Text("Overalls                                          50 coins").hLeading()
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 20) {
+                            //insert images here
+                            ForEach(0..<10) {
+                                Text("Item \($0)")
+                                    .foregroundColor(.white)
+                                    .font(.body)
+                                    .frame(width: 100, height: 100)
+                                    .background(.white)
+                            }
+                            
+                        }
+                    }
+                    Text("Shoe                                               30 coins").hLeading()
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 20) {
+                            ForEach(0..<10) {
+                                //insert images here
+                                Text("Item \($0)")
+                                    .foregroundColor(.white)
+                                    .font(.body)
+                                    .frame(width: 100, height: 100)
+                                    .background(.white)
+                            }
+                        }
+                    }
+                } 
+            }
+        }
+    }
+    
+}
+
+
+struct MyPreviewProvider_Previews: PreviewProvider {
+    static var previews: some View {
+        Shop()
+    }
+}
