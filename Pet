@@ -1,55 +1,103 @@
 import SwiftUI
 struct Pet: View {
+    let gradient = Gradient(colors: [.white,.black])
+    @ObservedObject var PetStyle: PetClothes
+    @ObservedObject var myEvents: Events
     
+    func getTotalCoins() -> Int {
+        var totalCoins = 0
+        for event in myEvents.examEvents {
+            totalCoins += event.completed
+        }
+        for event in myEvents.assignmentEvents {
+            totalCoins += event.completed
+        }
+        for event in myEvents.classEvents {
+            totalCoins += event.completed
+        }
+        for event in myEvents.leisureEvents {
+            totalCoins += event.completed
+        }
+        for event in myEvents.revisionEvents {
+            totalCoins += event.completed
+        }
+        return totalCoins
+    }
     var body: some View {
         NavigationView {
-            VStack(alignment: .leading) {
-                Text("Pet")
-                    .font(.system(size:40))
-                Spacer()
-                Text("Name")
-                    .font(.system(size:30))
-                Spacer()
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigation) {
-                    Button {
+            VStack {
+                HStack {
+                    Spacer()
+                
+                    VStack {
+                        Spacer()
                         
-                    } label: {
-                        Text("Shop")
-                            .fontWeight(.semibold)
-                            .font(.system(size: 13))
+                        ForEach(PetStyle.PetHat, id: \.self) { hat in if hat.design == "1A" { ForEach(PetStyle.PetOveralls, id: \.self) { overall in if overall.design == "1A" { ForEach(PetStyle.PetShoe, id: \.self) {
+                            shoe in if shoe.design == "1A" {
+                                Text("Hello")
                         
-                            .frame(minWidth: 60, maxWidth: 100)
-                            .foregroundColor(.orange)
-                            .padding(5)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 25)
-                                    .stroke(Color.primary, lineWidth: 0.8)
-                            )
-                            .padding()
+                        Image(systemName: "plus")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 300, height: 200)
+                            .clipShape(Circle())
+                            .clipped()
+                            .padding(.top, 44)
+                        }
+                        }
+                        }
+                        }
+                        }
+                        }
+                    
+                        Text("Pet").font(.system(size:20)).bold().foregroundColor(.white).padding(.top,12)
+                    
+                        Spacer()
+                    
+                        Text("Coins:" + String(getTotalCoins())).font(.system(size:20)).bold().foregroundColor(.white).padding(.top,12)
                     }
-                }
-                ToolbarItem(placement: .automatic) {
-                    Button {
+                    .toolbar {
+                        ToolbarItem(placement: .navigation) {
+                            Button {
+                                
+                            } label: {
+                                Text("Shop")
+                                    .fontWeight(.semibold)
+                                    .font(.system(size: 13))
+                                
+                                    .frame(minWidth: 60, maxWidth: 100)
+                                    .foregroundColor(.orange)
+                                    .padding(5)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 25)
+                                            .stroke(Color.primary, lineWidth: 0.8)
+                                    )
+                                    .padding()
+                            }
+                        }
                         
-                    } label: {
-                        Text("Wardrobe")
-                            .fontWeight(.semibold)
-                            .font(.system(size: 13))
-                            .frame(minWidth: 60)
-                            .foregroundColor(.orange)
-                            .padding(5)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 25)
-                                    .stroke(Color.primary, lineWidth: 0.8)
-                            )
-                            .padding()
+                        ToolbarItem(placement: .automatic) {
+                            Button {
+                                
+                            } label: {
+                                Text("Wardrobe")
+                                    .fontWeight(.semibold)
+                                    .font(.system(size: 13))
+                                    .frame(minWidth: 60)
+                                    .foregroundColor(.orange)
+                                    .padding(5)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 25)
+                                            .stroke(Color.primary, lineWidth: 0.8)
+                                    )
+                                    .padding()
+                            }
+                        }
                     }
-                }
             }
         }
+                
     }
 }
-
+}
 
