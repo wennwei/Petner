@@ -1,0 +1,12 @@
+import SwiftUI
+import Foundation
+
+struct PetStruct: Hashable {
+    var design: String
+}
+
+class PetClothes: ObservableObject {
+    @Published var PetHat = [PetStruct]()
+    @Published var PetOveralls = [PetStruct]()
+    @Published var PetShoe = [PetStruct]()
+}
