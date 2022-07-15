@@ -248,7 +248,7 @@ struct ChartAreaViewPreviousWeek: View {
         var assignmentValue = 0
         var revisionValue = 0
         var leisureValue = 0
-        for num in 0...6 {
+        for num in 1...7 {
             for event in myEvents.examEvents {
                 let counter = 86400 * num
                 if checkIfSameDay(selectedDay: previousweekday!.advanced(by: TimeInterval(counter)), event: event) {
