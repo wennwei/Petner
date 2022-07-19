@@ -1,8 +1,108 @@
 import SwiftUI
 struct Pet: View {
     let gradient = Gradient(colors: [.white,.black])
-    @ObservedObject var PetStyle: PetClothes
+    
     @ObservedObject var myEvents: Events
+    @EnvironmentObject var database: DBHelper
+    
+    @State private var wardrobeItems = [ItemStruct]()
+
+    @State private var showingShop = false // for bringing up shop view
+    @State private var showingWardrobe = false // for bringing up wardrobe view
+
+    @State private var coins = 0
+    
+    @State private var hat = "10"
+    @State private var overalls = "20"
+    @State private var shoe = "30"
+   
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                HStack {
+                    Spacer()
+                
+                    VStack {
+                        Text("Coins: \(coins)")
+                            .font(.system(size:20)).bold().foregroundColor(.primary).padding(.top,12)
+                        
+                        HStack {
+                            Spacer()
+                            Image("\(hat)\(overalls)\(shoe)")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 400)
+
+                            Spacer()
+                        }
+
+                        //Text("Pet").font(.system(size:20)).bold().foregroundColor(.primary).padding(.top,12)
+                    
+                        Spacer()
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .navigation) {
+                            Button {
+                                updateWardrobe()
+                                goToShop()
+                            } label: {
+                                Text("Shop")
+                                    .fontWeight(.semibold)
+                                    .font(.headline)
+                                
+                                    .frame(minWidth: 60, maxWidth: 100)
+                                    .foregroundColor(.orange)
+                                    .padding(5)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.primary, lineWidth: 1)
+                                    )
+                                    .padding()
+                            }
+                        }
+                        
+                        ToolbarItem(placement: .automatic) {
+                            Button {
+                                updateWardrobe()
+                                goToWardrobe()
+                            } label: {
+                                Text("Wardrobe")
+                                    .fontWeight(.semibold)
+                                    .font(.headline)
+                                    .frame(minWidth: 60)
+                                    .foregroundColor(.orange)
+                                    .padding(5)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.primary, lineWidth: 1)
+                                    )
+                                    .padding()
+                            }
+                        }
+                    }
+                    .sheet(isPresented: $showingShop) {
+                        Shop(myEvents: myEvents, wardrobeItems: $wardrobeItems, coins: $coins)
+                            .environmentObject(database)
+                    }
+                    .sheet(isPresented: $showingWardrobe) {
+                        Wardrobe(wardrobeItems: $wardrobeItems, selectedHat: $hat, selectedOveralls: $overalls, selectedShoe: $shoe)
+                            .environmentObject(database)
+                            .onDisappear {
+                                getPetwear()
+                            }
+                    }
+                    .onAppear {
+                        getPetwear()
+                        updateWardrobe()
+                        coins = getTotalCoins()
+                    }
+                    
+                }
+            }
+        }
+    }
+        
     
     func getTotalCoins() -> Int {
         var totalCoins = 0
@@ -21,83 +121,37 @@ struct Pet: View {
         for event in myEvents.revisionEvents {
             totalCoins += event.completed
         }
-        return totalCoins
-    }
-    var body: some View {
-        NavigationView {
-            VStack {
-                HStack {
-                    Spacer()
-                
-                    VStack {
-                        Spacer()
-                        
-                        ForEach(PetStyle.PetHat, id: \.self) { hat in if hat.design == "1A" { ForEach(PetStyle.PetOveralls, id: \.self) { overall in if overall.design == "1A" { ForEach(PetStyle.PetShoe, id: \.self) {
-                            shoe in if shoe.design == "1A" {
-                                Text("Hello")
-                        
-                        Image(systemName: "plus")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 300, height: 200)
-                            .clipShape(Circle())
-                            .clipped()
-                            .padding(.top, 44)
-                        }
-                        }
-                        }
-                        }
-                        }
-                        }
-                    
-                        Text("Pet").font(.system(size:20)).bold().foregroundColor(.white).padding(.top,12)
-                    
-                        Spacer()
-                    
-                        Text("Coins:" + String(getTotalCoins())).font(.system(size:20)).bold().foregroundColor(.white).padding(.top,12)
-                    }
-                    .toolbar {
-                        ToolbarItem(placement: .navigation) {
-                            Button {
-                                
-                            } label: {
-                                Text("Shop")
-                                    .fontWeight(.semibold)
-                                    .font(.system(size: 13))
-                                
-                                    .frame(minWidth: 60, maxWidth: 100)
-                                    .foregroundColor(.orange)
-                                    .padding(5)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 25)
-                                            .stroke(Color.primary, lineWidth: 0.8)
-                                    )
-                                    .padding()
-                            }
-                        }
-                        
-                        ToolbarItem(placement: .automatic) {
-                            Button {
-                                
-                            } label: {
-                                Text("Wardrobe")
-                                    .fontWeight(.semibold)
-                                    .font(.system(size: 13))
-                                    .frame(minWidth: 60)
-                                    .foregroundColor(.orange)
-                                    .padding(5)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 25)
-                                            .stroke(Color.primary, lineWidth: 0.8)
-                                    )
-                                    .padding()
-                            }
-                        }
-                    }
+        
+        for item in wardrobeItems {
+            if item.type == "1" {
+                totalCoins -= 20
+            } else if item.type == "2" {
+                totalCoins -= 50
+            } else {
+                totalCoins -= 30
             }
         }
-                
+        return totalCoins
+    }
+    
+    func goToShop() {
+        showingShop = true
+    }
+    
+    func goToWardrobe() {
+        showingWardrobe = true
+    }
+    
+    func getPetwear() {
+        let tempArray = database.queryPetwear()
+        if tempArray.count == 3 {
+            hat = tempArray[0]
+            overalls = tempArray[1]
+            shoe = tempArray[2]
+        }
+    }
+    
+    func updateWardrobe() {
+        wardrobeItems = database.queryWardrobe()
     }
 }
-}
-
