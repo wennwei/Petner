@@ -1,63 +1,300 @@
 import SwiftUI
 
 struct Shop: View {
+    @ObservedObject var myEvents: Events
+    @EnvironmentObject var database: DBHelper
     
+    @State private var hatList: [String] = ["Yellow Beanie", "Orange Beanie", "Black Top Hat", "Blue Top Hat"]
+    @State private var overallsList: [String] = ["Black Suit", "Purple T-shirt", "Green T-shirt"]
+    @State private var shoeList: [String] = ["Black-Grey Flip Flops", "Red-Blue Flip Flops", "Blue Sneakers", "Brown Sneakers"]
+
+    @Binding var wardrobeItems: [ItemStruct] // to track items which have been purchased already
+    @Binding var coins: Int // number of coins user has
+    
+    
+    @State private var showingPurchaseAlert = false // controls whether purchase alert is shown
+    // to know what item was tapped on
+    @State private var typeOfItem = ""
+    @State private var modelOfItem = ""
+    @State private var previewItem = "" // for displaying the name of the item tapped on
+
+    // for displaying the different items(coded A,B,C etc)
+    let identify4 = "ABCD"
+    let identify3 = "ABC"
+    
+    // for dismissing the view
+    @Environment(\.dismiss) var dismiss
+
     var body: some View {
         NavigationView {
             VStack(spacing: 15) {
-                Text("Shop")
-                    .font(.largeTitle)
-                Section {
-                    Text("Hat                                                  20 coins").hLeading()
-                    ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    Text("Hat")
+                        .font(.headline)
+                        .padding()
+                    Spacer()
+                    Text("20 coins")
+                        .font(.headline)
+                        .padding()
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
-                        //insert images here
-                        ForEach(0..<10) {
-                            Text("Item \($0)")
-                                .foregroundColor(.white)
-                                .font(.body)
-                                .frame(width: 100, height: 100)
-                                .background(.white)
+                        ForEach(Array(identify4), id: \.self) { char in
+                            if !checkIfOwned(type: "1", model: "\(char)") { // if item is not owned
+                                Button {
+                                    itemTapped(type: "1", model: "\(char)")
+                                } label: {
+                                    Image("1\(char)")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(height: 100)
+                                        .overlay(
+                                                RoundedRectangle(cornerRadius: 30)
+                                                    .stroke(.black, lineWidth: 2)
+                                        )
+                                        .padding()
+                                }
+                                
+                            }
+
                         }
                     }
                 }
-                    Text("Overalls                                          50 coins").hLeading()
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 20) {
-                            //insert images here
-                            ForEach(0..<10) {
-                                Text("Item \($0)")
-                                    .foregroundColor(.white)
-                                    .font(.body)
-                                    .frame(width: 100, height: 100)
-                                    .background(.white)
+                if checkFullyBought(type: "1") {
+                    Text("There are no more items for you to purchase.")
+                        .foregroundColor(Color.gray)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    Spacer()
+                        .frame(height: 50)
+                }
+                    
+                HStack {
+                    Text("Overalls")
+                        .font(.headline)
+                        .padding()
+                    Spacer()
+                    Text("50 coins")
+                        .font(.headline)
+                        .padding()
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(Array(identify3), id: \.self) { char in
+                            if !checkIfOwned(type: "2", model: "\(char)") { // if item is not owned
+                                Button {
+                                    itemTapped(type: "2", model: "\(char)")
+                                } label: {
+                                    Image("2\(char)")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(height: 120)
+                                        .overlay(
+                                                RoundedRectangle(cornerRadius: 30)
+                                                    .stroke(.black, lineWidth: 2)
+                                        )
+                                        .padding()
+                                }
                             }
-                            
                         }
                     }
-                    Text("Shoe                                               30 coins").hLeading()
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 20) {
-                            ForEach(0..<10) {
-                                //insert images here
-                                Text("Item \($0)")
-                                    .foregroundColor(.white)
-                                    .font(.body)
-                                    .frame(width: 100, height: 100)
-                                    .background(.white)
+                }
+                if checkFullyBought(type: "2") {
+                    Text("There are no more items for you to purchase.")
+                        .foregroundColor(Color.gray)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    Spacer()
+                        .frame(height: 50)
+                }
+                
+                HStack {
+                    Text("Shoe")
+                        .font(.headline)
+                        .padding()
+                    Spacer()
+                    Text("30 coins")
+                        .font(.headline)
+                        .padding()
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(Array(identify4), id: \.self) { char in
+                            if !checkIfOwned(type: "3", model: "\(char)") { // if item is not owned
+                                Button {
+                                    itemTapped(type: "3", model: "\(char)")
+                                } label: {
+                                    Image("3\(char)")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 350)
+                                        .overlay(
+                                                RoundedRectangle(cornerRadius: 30)
+                                                    .stroke(.black, lineWidth: 2)
+                                        )
+                                        .padding()
+                                }
                             }
                         }
                     }
-                } 
+                }
+                if checkFullyBought(type: "3"){
+                    Text("There are no more items for you to purchase.")
+                        .foregroundColor(Color.gray)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                }
+             
             }
+            .navigationTitle("Shop")
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+            .alert(isPresented: $showingPurchaseAlert) {
+                Alert(
+                    title: Text("\(previewItem)"),
+                    message: coinsIsSufficient(type:typeOfItem) ? Text("Do you want to purchase this item?") : Text("You have insufficient coins to purchase this item."),
+                    primaryButton: .cancel(),
+                    secondaryButton: coinsIsSufficient(type: typeOfItem) ? .destructive( Text("Purchase"), action: {
+                        database.insertWardrobe(type: typeOfItem, model: modelOfItem)
+                        updateItems()
+                    }) : .default(Text("Ok"))
+                   
+                )
+            }
+            .onDisappear {
+                coins = getTotalCoins()
+            }
+            
+            /*.alert(isPresented: $showingInsufficientAlert) {
+                Alert(
+                    title: Text("\(previewItem)"),
+                    message: Text("You have insufficient coins to purchase this item."),
+                    dismissButton: .default(Text("Ok"))
+                )
+            }*/
+            //.alert("Important message", isPresented: $showingAlert) {
+               //         Button("OK", role: .cancel) { }
+             //       }
         }
     }
     
-}
-
-
-struct MyPreviewProvider_Previews: PreviewProvider {
-    static var previews: some View {
-        Shop()
+    func updateItems() {
+        wardrobeItems = database.queryWardrobe()
+    }
+    
+    // to check if the item is owned by the user
+    func checkIfOwned(type: String, model: String) -> Bool {
+        var temp = ItemStruct(type: "0", model: "0")
+        temp.type = type
+        temp.model = model
+        
+        if wardrobeItems.contains(temp) {
+            return true
+        }
+        return false
+    }
+    
+    func checkFullyBought(type: String) -> Bool {
+        var count = 0
+        for item in wardrobeItems {
+            if item.type == type {
+                count += 1
+            }
+        }
+        if type == "1" || type == "3" {
+            if count == 4 {
+                return true
+            }
+            return false
+        }
+        if count == 3 {
+            return true
+        }
+        return false
+        
+    }
+    
+    func itemTapped(type: String, model: String) {
+        var indx: Int
+        if model == "A" {
+            indx = 0
+            modelOfItem = "A"
+        } else if model == "B" {
+            indx = 1
+            modelOfItem = "B"
+        } else if model == "C" {
+            indx = 2
+            modelOfItem = "C"
+        } else {
+            indx = 3
+            modelOfItem = "D"
+        }
+        
+        if type == "1" {
+            previewItem = hatList[indx]
+            typeOfItem = "1"
+        } else if type == "2" {
+            previewItem  = overallsList[indx]
+            typeOfItem = "2"
+        } else {
+            previewItem = shoeList[indx]
+            typeOfItem = "3"
+        }
+        showingPurchaseAlert = true
+    }
+    
+    // checks if current coins are sufficient for intended purchase
+    func coinsIsSufficient(type: String) -> Bool {
+        if type == "1" {
+            if coins < 20 {
+                return false
+            }
+            return true
+        }
+        if type == "2" {
+            if coins < 50 {
+                return false
+            }
+            return true
+        }
+        if coins < 30 {
+            return false
+        }
+        return true
+    }
+    
+    func getTotalCoins() -> Int {
+        var totalCoins = 0
+        for event in myEvents.examEvents {
+            totalCoins += event.completed
+        }
+        for event in myEvents.assignmentEvents {
+            totalCoins += event.completed
+        }
+        for event in myEvents.classEvents {
+            totalCoins += event.completed
+        }
+        for event in myEvents.leisureEvents {
+            totalCoins += event.completed
+        }
+        for event in myEvents.revisionEvents {
+            totalCoins += event.completed
+        }
+        
+        for item in wardrobeItems {
+            if item.type == "1" {
+                totalCoins -= 20
+            } else if item.type == "2" {
+                totalCoins -= 50
+            } else {
+                totalCoins -= 30
+            }
+        }
+        return totalCoins
     }
 }
