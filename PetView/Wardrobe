@@ -2,62 +2,269 @@ import SwiftUI
 
 struct Wardrobe: View {
     
+    @EnvironmentObject var database: DBHelper
+    
+    @State private var hatList: [String] = ["Yellow Beanie", "Orange Beanie", "Black Top Hat", "Blue Top Hat"]
+    @State private var overallsList: [String] = ["Black Suit", "Purple T-shirt", "Green T-shirt"]
+    @State private var shoeList: [String] = ["Black-Grey Flip Flops", "Red-Blue Flip Flops", "Blue Sneakers", "Brown Sneakers"]
+
+    
+    @Binding var wardrobeItems: [ItemStruct]
+    
+    // tracks if there exists at least one of each respective type of item
+    @State private var hatIsEmpty = true
+    @State private var overallsIsEmpty = true
+    @State private var shoeIsEmpty = true
+    
+    // Items currently worn by pet
+    @Binding var selectedHat: String
+    @Binding var selectedOveralls: String
+    @Binding var selectedShoe: String
+    
+    // to know what item was tapped on
+    @State private var typeOfItem = "" 
+    @State private var modelOfItem = ""
+    @State private var previewItem = "" // for displaying name of item tapped on
+    
+    @State private var showingWearAlert = false // controls whether confirmation to equip item alert is shown
+    @State private var showingUnequipAlert = false // controls whether unequip confirmation alert is shown
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 15) {
-                Text("Wardrobe")
-                    .font(.largeTitle)
-                Section {
-                    Text("Hat").hLeading()
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 20) {
-                            ForEach(0..<10) {
-                                //insert images here
-                                Text("Item \($0)")
-                                    .foregroundColor(.white)
-                                    .font(.body)
-                                    .frame(width: 100, height: 100)
-                                    .background(.white)
+                
+                HStack {
+                    Text("Hat")
+                        .font(.headline)
+                        .padding()
+                    Spacer()
+                    
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(wardrobeItems, id: \.self) { item in
+                            if item.type == "1" {
+                                Button {
+                                    itemTapped(type: "1", model: "\(item.model)")
+                                } label: {
+                                    Image("1\(item.model)")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(height: 100)
+                                    
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 30)
+                                                .stroke(.black, lineWidth: 2)
+                                        )
+                                        .padding()
+                                        .onAppear {
+                                            hatIsEmpty = false
+                                        }
+                                }
+                            }
+                        }
+                        if !hatIsEmpty {
+                            Button {
+                                typeOfItem = "1"
+                                updatePet(modelOfItem: "0")
+                                dismiss()
+
+                            } label: {
+                                VStack {
+                                    Image(systemName: "x.circle.fill")
+                                        .foregroundColor(.red)
+                                    Text("Remove Hat")
+                                        .foregroundColor(.red)
+                                }
+                                .padding()
                             }
                         }
                     }
-                    Text("Overalls").hLeading()
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 20) {
-                            ForEach(0..<10) {
-                                //insert images here
-                                Text("Item \($0)")
-                                    .foregroundColor(.white)
-                                    .font(.body)
-                                    .frame(width: 100, height: 100)
-                                    .background(.white)
+                }
+                if hatIsEmpty {
+                    Text("You currently have no items, work harder!")
+                        .foregroundColor(Color.gray)
+                        .padding()
+                    Spacer()
+                        .frame(height: 50)
+                }
+                
+
+                HStack {
+                    Text("Overalls")
+                        .font(.headline)
+                        .padding()
+                    Spacer()
+                    
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(wardrobeItems, id: \.self) { item in
+                            if item.type == "2" {
+                                Button {
+                                    itemTapped(type: "2", model: "\(item.model)")
+                                } label : {
+                                    Image("2\(item.model)")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(height: 100)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 30)
+                                                .stroke(.black, lineWidth: 2)
+                                        )
+                                        .padding()
+                                        .onAppear {
+                                            overallsIsEmpty = false
+                                        }
+                                }
+                                
                             }
-                            
+                        }
+                        if !overallsIsEmpty {
+                            Button {
+                                typeOfItem = "2"
+                                updatePet(modelOfItem: "0")
+                                dismiss()
+
+                            } label: {
+                                VStack {
+                                    Image(systemName: "x.circle.fill")
+                                        .foregroundColor(.red)
+                                    Text("Remove Overalls")
+                                        .foregroundColor(.red)
+                                }
+                                .padding()
+                            }
                         }
                     }
-                    Text("Shoe").hLeading()
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 20) {
-                            ForEach(0..<10) {
-                                //insert images here
-                                Text("Item \($0)")
-                                    .foregroundColor(.white)
-                                    .font(.body)
-                                    .frame(width: 100, height: 100)
-                                    .background(.white)
+                }
+                if overallsIsEmpty {
+                    Text("You currently have no items, work harder!")
+                        .foregroundColor(Color.gray)
+                        .padding()
+                    Spacer()
+                        .frame(height: 50)
+                }
+                
+
+                HStack {
+                    Text("Shoe")
+                        .font(.headline)
+                        .padding()
+                    Spacer()
+                    
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(wardrobeItems, id: \.self) { item in
+                            if item.type == "3" {
+                                Button {
+                                    itemTapped(type: "3", model: "\(item.model)")
+                                } label: {
+                                    Image("3\(item.model)")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(height: 100)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 30)
+                                                .stroke(.black, lineWidth: 2)
+                                        )
+                                        .padding()
+                                        .onAppear {
+                                            shoeIsEmpty = false
+                                        }
+                                }
+                            }
+                        }
+                        if !shoeIsEmpty {
+                            Button {
+                                typeOfItem = "3"
+                                updatePet(modelOfItem: "0")
+                                dismiss()
+
+                            } label: {
+                                VStack {
+                                    Image(systemName: "x.circle.fill")
+                                        .foregroundColor(.red)
+                                    Text("Remove Shoe")
+                                        .foregroundColor(.red)
+                                }
+                                .padding()
                             }
                         }
                     }
-                } 
+                }
+                if shoeIsEmpty {
+                    Text("You currently have no items, work harder!")
+                        .foregroundColor(Color.gray)
+                        .padding()
+                }
+            }
+            .navigationTitle("Wardrobe")
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+
+                    }
+                }
+            }
+            .alert(isPresented: $showingWearAlert) {
+                Alert(
+                    title: Text("\(previewItem)"),
+                    message: Text("Do you want to equip this item?"),
+                    primaryButton: .cancel(),
+                    secondaryButton: .destructive(Text("Yes"), action: {
+                        updatePet(modelOfItem: modelOfItem)
+                        dismiss()
+                    })
+                    
+                )
             }
         }
     }
     
-}
-
-
-struct PreviewProvider_Previews: PreviewProvider {
-    static var previews: some View {
-        Wardrobe()
+    // When an item is tapped, updates variables to represent tapped item and brings up the respective alert
+    func itemTapped(type: String, model: String) {
+        var indx = 0
+        
+        if model == "A" {
+            indx = 0
+            modelOfItem = "A"
+        } else if model == "B" {
+            indx = 1
+            modelOfItem = "B"
+        } else if model == "C" {
+            indx = 2
+            modelOfItem = "C"
+        } else if model == "D"{
+            indx = 3
+            modelOfItem = "D"
+        }
+        
+        if type == "1" {
+            previewItem = hatList[indx]
+            typeOfItem = "1"
+        } else if type == "2" {
+            previewItem = overallsList[indx]
+            typeOfItem = "2"
+        } else {
+            previewItem = shoeList[indx]
+            typeOfItem = "3"
+        }
+        showingWearAlert = true
     }
+    
+    func updatePet(modelOfItem: String) {
+        if typeOfItem == "1" {
+            database.updatePetwear(oldHat: selectedHat, hat: "1\(modelOfItem)", overalls: selectedOveralls, shoe: selectedShoe)
+        } else if typeOfItem == "2" {
+            database.updatePetwear(oldHat: selectedHat, hat: selectedHat, overalls: "2\(modelOfItem)", shoe: selectedShoe)
+        } else {
+            database.updatePetwear(oldHat: selectedHat, hat: selectedHat, overalls: selectedOveralls, shoe: "3\(modelOfItem)")
+        }
+    }
+    
+   
 }
