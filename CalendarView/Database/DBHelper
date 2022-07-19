@@ -7,6 +7,9 @@ class DBHelper: ObservableObject {
         init() {
             self.db = createDB()
             self.createTable()
+            self.createPetwearTable()
+            self.createWardrobeTable()
+            self.insertPetwear()
         }
         
     func createDB() -> OpaquePointer? {
@@ -41,6 +44,39 @@ class DBHelper: ObservableObject {
         sqlite3_finalize(statement)
     }
     
+    func createPetwearTable() {
+        let createTableString = "CREATE TABLE IF NOT EXISTS petwear(hat TEXT, overalls TEXT, shoe TEXT);"
+        var statement : OpaquePointer? = nil
+        
+        if sqlite3_prepare_v2(self.db, createTableString, -1, &statement, nil) == SQLITE_OK {
+            if sqlite3_step(statement) == SQLITE_DONE {
+                print("Table creation success")
+            } else {
+                print("Table creation fail")
+            }
+        } else {
+            print("Prepration fail")
+        }
+        sqlite3_finalize(statement)
+    }
+    
+    func createWardrobeTable() {
+        let createTableString = "CREATE TABLE IF NOT EXISTS inventory(type TEXT, model TEXT);"
+        var statement : OpaquePointer? = nil
+        
+        if sqlite3_prepare_v2(self.db, createTableString, -1, &statement, nil) == SQLITE_OK {
+            if sqlite3_step(statement) == SQLITE_DONE {
+                print("Table creation success")
+            } else {
+                print("Table creation fail")
+            }
+        } else {
+            print("Prepration fail")
+        }
+        sqlite3_finalize(statement)
+    }
+    
+    // inserts data on each event into the table
     func insertEvent(day: Int, month: Int, year: Int, desc: String, startTime: Int, endTime: Int, category: String, completed: Int) {
         let insertStatementString = "INSERT INTO events (day, month, year, desc, startTime, endTime, category, completed) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
         var insertStatement: OpaquePointer? = nil
@@ -67,7 +103,50 @@ class DBHelper: ObservableObject {
         }
         sqlite3_finalize(insertStatement)
     }
+    
+    // insert data(no apparel equipped) on items which are currently worn by user's pet
+    func insertPetwear() {
+        let insertStatementString = "INSERT INTO petwear (hat, overalls, shoe) VALUES (?, ?, ?);"
+        var insertStatement: OpaquePointer? = nil
+        if sqlite3_prepare_v2(db, insertStatementString, -1, &insertStatement, nil) == SQLITE_OK {
+            
+            sqlite3_bind_text(insertStatement, 1, ("10" as NSString).utf8String, -1, nil)
+            sqlite3_bind_text(insertStatement, 2, ("20" as NSString).utf8String, -1, nil)
+            sqlite3_bind_text(insertStatement, 3, ("30" as NSString).utf8String, -1, nil)
+            
+            if sqlite3_step(insertStatement) == SQLITE_DONE {
+                print("\nSuccessfully inserted row in petwear.")
+            } else {
+                print("\nCould not insert row.")
+            }
+        } else {
+            print("\nINSERT statement is not prepared.")
+        }
+        sqlite3_finalize(insertStatement)
+    }
+    
+    // insert data on items that are added to user's wardrobe
+    func insertWardrobe(type: String, model: String) {
+        let insertStatementString = "INSERT INTO inventory (type, model) VALUES (?, ?);"
+        var insertStatement: OpaquePointer? = nil
+        if sqlite3_prepare_v2(db, insertStatementString, -1, &insertStatement, nil) == SQLITE_OK {
+            
+            sqlite3_bind_text(insertStatement, 1, (type as NSString).utf8String, -1, nil)
+            sqlite3_bind_text(insertStatement, 2, (model as NSString).utf8String, -1, nil)
+            
+            if sqlite3_step(insertStatement) == SQLITE_DONE {
+                print("\nSuccessfully inserted row.")
+            } else {
+                print("\nCould not insert row.")
+            }
+        } else {
+            print("\nINSERT statement is not prepared.")
+        }
+        sqlite3_finalize(insertStatement)
 
+    }
+    
+    // returns all events in an array
     func query() -> [EventStruct] {
         var events = [EventStruct]()
         let queryStatementString = "SELECT day, month, year, desc, startTime, endTime, category, completed FROM events;"
@@ -107,6 +186,70 @@ class DBHelper: ObservableObject {
         return events
     }
     
+    // returns items currently worn by pet in an array
+    func queryPetwear() -> [String] {
+        var code = [String]()
+        let queryStatementString = "SELECT hat, overalls, shoe FROM petwear;"
+        var queryStatement: OpaquePointer?
+        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
+            if (sqlite3_step(queryStatement) == SQLITE_ROW) {
+                guard let hatResult = sqlite3_column_text(queryStatement, 0) else {
+                    print("Query result1 is nil")
+                    return code
+                }
+                code.append(String(cString: hatResult))
+                guard let overallsResult = sqlite3_column_text(queryStatement, 1) else {
+                    print("Query result2 is nil")
+                    return code
+                }
+                code.append(String(cString: overallsResult))
+                guard let shoeResult = sqlite3_column_text(queryStatement, 2) else {
+                    print("Query result3 is nil")
+                    return code
+                }
+                code.append(String(cString: shoeResult))
+            }
+        } else {
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            print("\nQuery is not prepared: \(errorMessage)")
+        }
+        sqlite3_finalize(queryStatement)
+        return code
+    }
+    
+    // returns all items in user's wardrobe in an array
+    func queryWardrobe() -> [ItemStruct] {
+        var items = [ItemStruct]()
+        let queryStatementString = "SELECT type, model FROM inventory;"
+        var queryStatement: OpaquePointer?
+        
+        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
+            while (sqlite3_step(queryStatement) == SQLITE_ROW) {
+                var tempItem = ItemStruct(type: "0", model: "0")
+                guard let queryResultItemType = sqlite3_column_text(queryStatement, 0) else {
+                    print("Query result is nil")
+                    return items
+                }
+                guard let queryResultModel = sqlite3_column_text(queryStatement, 1) else {
+                    print("Query result is nil")
+                    return items
+                }
+                tempItem.type = String(cString: queryResultItemType)
+                tempItem.model = String(cString: queryResultModel)
+                
+                if !items.contains(tempItem) {
+                    items.append(tempItem)
+                }
+            }
+        } else {
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            print("\nQuery is not prepared: \(errorMessage)")
+        }
+        sqlite3_finalize(queryStatement)
+        return items
+    }
+    
+    // deletes an event from the database table
     func delete(desc: String, day: Int) {
         let deleteStatementString = "DELETE FROM events WHERE desc LIKE '\(desc)' AND day = \(day);"
         var deleteStatement: OpaquePointer?
@@ -122,6 +265,7 @@ class DBHelper: ObservableObject {
         sqlite3_finalize(deleteStatement)
     }
     
+    // updates details of a specific event
     func update(oldEvent: EventStruct, event: EventStruct) {
         let updateStatementString = "UPDATE events SET day = \(event.day), month = \(event.month), year = \(event.year), desc = '\(event.desc)', startTime = \(event.startTime), endTime = \(event.endTime), category = '\(event.category)', completed = '\(event.completed)' WHERE desc = '\(oldEvent.desc)' AND day = \(oldEvent.day);"
         var updateStatement: OpaquePointer?
@@ -136,4 +280,22 @@ class DBHelper: ObservableObject {
         }
         sqlite3_finalize(updateStatement)
     }
+    
+    // updates data on what the pet is currently wearing
+    func updatePetwear(oldHat: String, hat: String, overalls: String, shoe: String) {
+        let updateStatementString = "UPDATE petwear SET hat = '\(hat)', overalls = '\(overalls)', shoe = '\(shoe)';"
+        var updateStatement: OpaquePointer?
+        if sqlite3_prepare_v2(db, updateStatementString, -1, &updateStatement, nil) == SQLITE_OK {
+            if sqlite3_step(updateStatement) == SQLITE_DONE {
+                print("\nSuccessfully updated row.")
+            } else {
+                print("\nCould not update row.")
+            }
+        } else {
+            print("\nUPDATE statement is not prepared")
+        }
+        sqlite3_finalize(updateStatement)
+    }
 }
+
+ 
