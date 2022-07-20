@@ -11,7 +11,6 @@ class Events: ObservableObject {
 struct ContentView: View {
     @StateObject var myEvents = Events() // creating an instance of Events class to store array of different category of events
     @StateObject var database = DBHelper()
-    @StateObject var PetStyle = PetClothes()
     
     let views = ["Monthly", "Weekly"]
     @State private var viewType = "Weekly"
@@ -37,7 +36,7 @@ struct ContentView: View {
                 .tabItem {
                     Label("Review", systemImage: "checklist")
                 }
-            Pet(PetStyle: PetStyle, myEvents: myEvents)
+            Pet(myEvents: myEvents)
                 .tabItem {
                     Label("Pet", systemImage: "pawprint")
                 }
