@@ -27,6 +27,7 @@ struct Review: View {
         VStack {
             Text("Review")
             .font(.title)
+            .fontWeight(.heavy)
             
             BarChartViewCurrentWeek(
                 myEvents: myEvents, title: "Completed events in current week", data: chartData)
@@ -355,7 +356,7 @@ struct ChartAreaViewPreviousWeek: View {
     var body: some View {
         GeometryReader { gr in
             let fullBarHeight = gr.size.height * 0.9
-            let maxValue = getMaxValue()//data.map{ $0.value}.max()!
+            let maxValue = getMaxValue()
             
             ZStack{
                 RoundedRectangle(cornerRadius: 5.0)
@@ -399,7 +400,7 @@ struct BarView: View {
                 VStack{
                     Spacer()
                     RoundedRectangle(cornerRadius: 5.0)
-                        .fill(Color.blue)
+                        .fill(Color.teal)
                         .frame(height: CGFloat(barHeight), alignment: .trailing)
                 }
                 VStack{
