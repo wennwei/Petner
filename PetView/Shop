@@ -169,17 +169,7 @@ struct Shop: View {
             .onDisappear {
                 coins = getTotalCoins()
             }
-            
-            /*.alert(isPresented: $showingInsufficientAlert) {
-                Alert(
-                    title: Text("\(previewItem)"),
-                    message: Text("You have insufficient coins to purchase this item."),
-                    dismissButton: .default(Text("Ok"))
-                )
-            }*/
-            //.alert("Important message", isPresented: $showingAlert) {
-               //         Button("OK", role: .cancel) { }
-             //       }
+
         }
     }
     
