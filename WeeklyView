@@ -368,10 +368,6 @@ struct WeeklyView: View {
                 Text(Date().formatted(date: .abbreviated, time:.omitted))
                     .foregroundColor(.gray)
                 
-                /*Text("Today")
-                    .font(.largeTitle.bold())
-                    .foregroundColor(.primary)*/
-                
             }
             .hLeading()
             Button {
