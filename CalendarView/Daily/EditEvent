@@ -85,9 +85,7 @@ struct EditEvent: View {
                         Spacer()
                     }
                 }
-                //if want to include min also
-                /*DatePicker("Start Time", selection: $start, displayedComponents: .hour)
-                 .labelsHidden()*/
+
             }
             .navigationTitle("Edit event")
             .toolbar {
