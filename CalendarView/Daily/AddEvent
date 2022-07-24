@@ -61,9 +61,6 @@ struct AddEvent: View {
                     }
                 }
                 
-                //if want to include min also
-                /*DatePicker("Start Time", selection: $start, displayedComponents: .hour)
-                    .labelsHidden()*/
             }
             .navigationTitle("New event")
             .toolbar {
